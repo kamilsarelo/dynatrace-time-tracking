@@ -1,1 +1,1 @@
-var com_kamilsarelo_timetracking_initialized = true;
+com_kamilsarelo_timetracking_initialized = true;
