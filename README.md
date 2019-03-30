@@ -4,7 +4,7 @@ from 2019-04-01 on you'll have to use two things:
 - my [Excel spreadsheet](./spreadsheet/spreadsheet.xlsx) v16+ to track your working times easily
 - my bookmarklet to book your times from the spreadsheet to Timecockpit
 
-## How to add the bookmarklet
+## How to create the bookmarklet
 
 1) create a bookmark in your browser with the following code as location/url (this is the bookmarklet):
  ```javascript
