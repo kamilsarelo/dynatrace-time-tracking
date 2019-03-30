@@ -11,8 +11,8 @@ from 2019-04-01 on you'll **need two things**:
  javascript:void function(){alert('hello');}();
  ```
 
-2) click the bookmarklet to use it (will forward to Timecockpit first, if not open yet)
+2) click the bookmarklet to use it (will forward to Timecockpit first, in case not open yet)
 
-3) copy Timecockpit-strings from spreadsheet and paste them into the bookmarklet's window
+3) copy Timecockpit-strings from the spreadsheet and paste them into the bookmarklet's window
 
 4) click BOOK
