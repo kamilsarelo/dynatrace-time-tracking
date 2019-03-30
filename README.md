@@ -1,4 +1,4 @@
-# Dynatrace timetracking via Excel spreadsheet
+# Dynatrace working time tracking via Excel spreadsheet
 
 from 2019-04-01 on you'll **need two things**:
 - my [**Excel spreadsheet**](./spreadsheet/spreadsheet_de_v16.xlsx) v16+ to track your working times easily
