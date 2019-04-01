@@ -4,7 +4,7 @@
     "target": "es2015",
     "strict": false,
     "noImplicitAny": false,
-    "allowJs": true,
+    "checkJs": false,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
@@ -15,7 +15,7 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "bookmarklet/*.ts"
   ],
   "exclude": [
     "node_modules",

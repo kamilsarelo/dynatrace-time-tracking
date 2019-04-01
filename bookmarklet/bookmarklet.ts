@@ -1,11 +1,11 @@
 // console.clear();
 
 function main() {
-	if (window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING) {
+	if (window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING']) {
 		console.log('ERROR: bookmarklet is already running');
 		return; // https://stackoverflow.com/questions/550574/how-to-terminate-the-script-in-javascript
 	}
-	window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
+	window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING'] = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
 
 	console.log('bookmarklet called');
 
@@ -13,12 +13,13 @@ function main() {
 
 	if (window.location.origin !== url) {
 		var dummy = document.createElement('dummy');
-		dummy.innerHTML = '\
-			<div style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.66); display: grid;">\
-				<div style="margin: auto; padding: 24px; box-sizing: border-box; font-size: 24px; background-color: yellow; border-radius: 4px; font-family: Roboto, \'Segoe UI\', BlinkMacSystemFont, system-ui, -apple-system, Arial, Helvetica, sans-serif;">\
-					redirecting to ' + url + ' ...\
-				</div>\
-			</div>';
+
+		dummy.innerHTML =
+`<div style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.66); display: grid;">
+	<div style="margin: auto; padding: 24px; box-sizing: border-box; font-size: 24px; background-color: yellow; border-radius: 4px; font-family: Roboto, 'Segoe UI', BlinkMacSystemFont, system-ui, -apple-system, Arial, Helvetica, sans-serif;">
+		redirecting to ${url} ...
+	</div>
+</div>`;
 		document.body.appendChild(dummy.querySelector('div')); // https://developer.mozilla.org/de/docs/Web/API/Document/body and https://stackoverflow.com/questions/9614932/best-way-to-create-large-static-dom-elements-in-javascript
 
 		window.setTimeout(function () {
@@ -29,15 +30,16 @@ function main() {
 
 	} else {
 		if (document.readyState && document.readyState === 'complete') {
-			_.createContent();
+			_['createContent']();
 		} else {
-			window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+			window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING'] = false;
 		}
 	}
 }
 
 var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-helper-library-like-lodash-and-underscore.js/
 	'use strict';
+
 	var methods = {};
 
 	// caches
@@ -47,7 +49,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 	var statusOfPreviousLineDone = 'done';
 
-	methods.createContent = function () {
+	methods['createContent'] = function () {
 		var idCss = 'com_kamilsarelo_dynatrace_timetracking_css';
 		var idHtml = 'com_kamilsarelo_dynatrace_timetracking_html'; // https://stackoverflow.com/questions/6028211/what-is-the-standard-naming-convention-for-html-css-ids-and-classes/37797488#37797488
 
@@ -58,12 +60,11 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					element.parentNode.removeChild(element); //https://stackoverflow.com/questions/8830839/javascript-dom-remove-element/8830882
 				});
 			});
-		};
+		}
 		clear();
 
 		(function () { // or: function loadCss() { | var loadCss = function() {
 			return new Promise(function (resolve, reject) { // https://stackoverflow.com/questions/574944/how-to-load-up-css-files-using-javascript/51183077#51183077
-
 				// CSS
 
 				var link = document.createElement('link');
@@ -81,7 +82,6 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			});
 		})() // anonymous function call: https://stackoverflow.com/questions/7498361/defining-and-calling-function-in-one-step
 			.then(function () { // or: // loadCss().then(function () {
-
 				// HTML
 
 				var idContent = 'com_kamilsarelo_dynatrace_timetracking_content';
@@ -139,9 +139,9 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				//
 				// ... good, but this is better...
 				//
-				document.getElementById(idInput).addEventListener('paste', function (e) { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
+				document.getElementById(idInput).addEventListener('paste', function (e: any) { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
 					e.preventDefault();
-					content = (e.originalEvent || e).clipboardData.getData('text/plain');
+					const content = (e.originalEvent || e).clipboardData.getData('text/plain');
 					document.execCommand('insertText', false, content);
 				});
 
@@ -161,8 +161,8 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 						function setEnabled(isEnabled) {
 							[idButtonBook, idButtonClear, idButtonClose].forEach(function (id) {
-								document.getElementById(id).disabled = !isEnabled;
-							})
+								document.getElementById(id)['disabled'] = !isEnabled;
+							});
 							input.contentEditable = isEnabled;
 							input.focus();
 							document.getElementById(idLoader).style.visibility = isEnabled ? 'hidden' : 'visible';
@@ -186,7 +186,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						// and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
 						//
 						// ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-						var synchronizedLineProcessor = function (statusOfPreviousLine) {
+						var synchronizedLineProcessor = function (statusOfPreviousLine?) {
 							if (linePrevious) {
 								input.innerHTML =
 									(input.innerHTML
@@ -204,7 +204,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 							} else {
 								setEnabled(true);
 							}
-						}
+						};
 						setTimeout(function () { // must be deferred
 							synchronizedLineProcessor();
 						}, 0);
@@ -230,7 +230,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						};
 				}
 
-				document.onkeydown = function (event) {
+				document.onkeydown = function (event: any) {
 					event = event || window.event;
 					if (event.keyCode == 27) { // ESC key
 						clear();
@@ -238,7 +238,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					}
 				};
 
-				window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+				window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING'] = false;
 			});
 	};
 
@@ -371,7 +371,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			};
 		})();
 		if (properties) {
-			properties.USR_TimesheetTypeUuid = cacheTimesheetTypeUuid;
+			properties['USR_TimesheetTypeUuid'] = cacheTimesheetTypeUuid;
 
 			// console.log('properties');
 			// console.log('  jiraKey               = ' + properties.jiraKey);
@@ -384,13 +384,13 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		} else {
 			callback('invalid');
 		}
-	};
+	}
 
 	function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback) {
 		xhrGet('/odata/APP_Timesheet'
 			+ '?$filter=APP_BeginTime eq datetime\'' + properties.APP_BeginTime + '\''
 			+ ' or APP_EndTime eq datetime\'' + properties.APP_EndTime + '\'')
-			.then(function (response) {
+			.then(function (response: string) {
 				// console.log(response);
 				var json = JSON.parse(response);
 				if (json && json.value) {
@@ -425,7 +425,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		}
 		xhrGet('/odata/APP_UserDetail'
 			+ '?$select=APP_UserDetailUuid')
-			.then(function (response) {
+			.then(function (response: string) {
 				// console.log(response);
 				var json = JSON.parse(response);
 				if (json && json.value) {
@@ -445,7 +445,6 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				console.log('ERROR: in queryUserId()', error);
 				callback(error.status || 'error');
 			});
-		;
 	}
 
 	function queryTaskIdAndProjectIdForJiraKey(properties, callback) {
@@ -466,7 +465,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		xhrGet('/odata/APP_Task'
 			+ '?$filter=APP_Code eq \'' + properties.jiraKey + '\''
 			+ '&$select=APP_TaskUuid,APP_ProjectUuid')
-			.then(function (response) {
+			.then(function (response: string) {
 				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
@@ -521,7 +520,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ ' and APP_BeginTime ge datetime\'2019-04-01T00:00:00\''
 			+ ' and APP_EndTime le datetime\'2020-01-01T00:00:00\''
 			+ '&$select=APP_TimesheetUuid')
-			.then(function (response) {
+			.then(function (response: string) {
 				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
@@ -548,23 +547,23 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			.catch(function (error) {
 				console.log('ERROR: in deleteEntity()', error);
 			});
-
 	}
 
 	function xhrGet(url) {
 		return xhr(url);
-	};
+	}
 
 	function xhrPost(url, json) {
 		return xhr(url, 'POST', json);
-	};
+	}
 
 	function xhrDelete(url) {
 		return xhr(url, 'DELETE');
-	};
+	}
 
-	function xhr(url, method, json) {
-		var request = new XMLHttpRequest();
+	function xhr(url, method?, json?) {
+		const request = new XMLHttpRequest();
+
 		return new Promise(function (resolve, reject) {
 			request.onreadystatechange = function () {
 				if (request.readyState !== 4) return; // 4 is DONE, https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
@@ -591,8 +590,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				request.send();
 			}
 		});
-	};
-
+	}
 	return methods;
 })();
 

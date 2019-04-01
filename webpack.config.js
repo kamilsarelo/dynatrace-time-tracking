@@ -2,10 +2,10 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: path.join(__dirname, '/bookmarklet/bookmarklet.ts'),
+  entry: path.join(__dirname, 'bookmarklet/bookmarklet.ts'),
   output: {
     filename: 'bookmarklet.js',
-    path: path.resolve(__dirname, '/bookmarklet/dist')
+    path: path.resolve(__dirname, 'bookmarklet/dist')
   },
   module: {
     rules: [
