@@ -17,9 +17,9 @@ javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=
 (will forward to Timecockpit first if not open yet, then click the bookmarklet again to use it)
 
 4. copy the Timecockpit-relevant strings from the latest spreadsheet:
-![](./res/spreadsheet.png)
+![](./resouces/spreadsheet.png)
 
 5. paste the copied strings into the bookmarklet's window:
-![](./res/bookmarklet.png)
+![](./resouces/bookmarklet.png)
 
 6. click BOOK and lean back
