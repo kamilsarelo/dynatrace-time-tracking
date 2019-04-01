@@ -1,7 +1,7 @@
 # Dynatrace working time tracking via Excel spreadsheet
 
 from 2019-04-01 on you'll **need two things**:
-- my [**Excel spreadsheet**](./spreadsheet/spreadsheet_template_de_v17.xlsx) v17+ to track your working times easily
+- my [**Excel spreadsheet**](./spreadsheet/) v17+ to track your working times easily
 - my **bookmarklet** to book your times from the spreadsheet to Timecockpit
 
 ## How to
