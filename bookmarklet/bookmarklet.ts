@@ -5,7 +5,7 @@ function main() {
 		console.log('ERROR: bookmarklet is already running');
 		return; // https://stackoverflow.com/questions/550574/how-to-terminate-the-script-in-javascript
 	}
-	COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
+	window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
 
 	console.log('bookmarklet called');
 
@@ -31,7 +31,7 @@ function main() {
 		if (document.readyState && document.readyState === 'complete') {
 			_.createContent();
 		} else {
-			COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+			window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
 		}
 	}
 }
@@ -238,7 +238,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					}
 				};
 
-				COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+				window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
 			});
 	};
 
