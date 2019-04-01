@@ -10,7 +10,7 @@ from 2019-04-01 on you'll **need two things**:
 
 2. create a bookmark in your browser with the following code as location/url (this is the bookmarklet):
 ```
-javascript:void%20function(){var%20t=document.createElement(%22script%22);t.src=%22https://kamilsarelo.github.io/com.dynatrace.timetracking.bookmarklet.js%22,t.type=%22text/javascript%22,t.onreadystatechange=t.onload=function(){var%20e=t.readyState;e%26%26%22loaded%22!==e%26%26%22complete%22!==e%26%26alert(%22could%20not%20load%20bookmarklet%22)},document.head.appendChild(t)}();
+javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=%22https://kamilsarelo.github.io/com.dynatrace.timetracking.bookmarklet.js%3Fq=%22+(new%20Date).getTime(),e.type=%22text/javascript%22,e.onreadystatechange=e.onload=function(){var%20t=e.readyState;t%26%26%22loaded%22!==t%26%26%22complete%22!==t%26%26alert(%22could%20not%20load%20bookmarklet%22)},document.head.appendChild(e)}();
 ```
 
 3. click the bookmarklet to use it
