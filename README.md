@@ -23,3 +23,4 @@ javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=
 ![](./resouces/bookmarklet.png)
 
 6. click BOOK and lean back
+![](./resouces/timecockpit.png)
