@@ -15,7 +15,7 @@ function main() {
 		var dummy = document.createElement('dummy');
 
 		dummy.innerHTML =
-`<div style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.66); display: grid;">
+			`<div style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.66); display: grid;">
 	<div style="margin: auto; padding: 24px; box-sizing: border-box; font-size: 24px; background-color: yellow; border-radius: 4px; font-family: Roboto, 'Segoe UI', BlinkMacSystemFont, system-ui, -apple-system, Arial, Helvetica, sans-serif;">
 		redirecting to ${url} ...
 	</div>
@@ -61,6 +61,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				});
 			});
 		}
+
 		clear();
 
 		(function () { // or: function loadCss() { | var loadCss = function() {
@@ -99,26 +100,26 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 				var dummy = document.createElement('dummy');
 				dummy.innerHTML =
-`<div id="${idHtml}">
-    <div id="${idContent}">
-        <div id="${idHeader}"></div>
-        <div id="${idMain}">
-            <div id="${idInput}" contenteditable="true">
-                &#xfeff;
-            </div>
-            <div id="${idLoader}">
-                <div class="spin-wrapper">
-                    <div class="spinner">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="${idFooter}">
-            <button id="${idButtonBook}" class="pure-material-button-contained">Book</button>\
-            <button id="${idButtonClear}" class="pure-material-button-outlined">Clear</button>\
-            <button id="${idButtonClose}" class="pure-material-button-outlined">Close</button>\
-        </div>
-    </div>
+					`<div id="${idHtml}">
+	<div id="${idContent}">
+		<div id="${idHeader}"></div>
+		<div id="${idMain}">
+			<div id="${idInput}" contenteditable="true">
+				&#xfeff;
+			</div>
+			<div id="${idLoader}">
+				<div class="spin-wrapper">
+					<div class="spinner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="${idFooter}">
+			<button id="${idButtonBook}" class="pure-material-button-contained">Book</button>
+			<button id="${idButtonClear}" class="pure-material-button-outlined">Clear</button>
+			<button id="${idButtonClose}" class="pure-material-button-outlined">Close</button>
+		</div>
+	</div>
 </div>`;
 				document.body.appendChild(dummy.querySelector('div'));
 
@@ -144,8 +145,8 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					document.execCommand('insertText', false, content);
 				});
 
-				document.getElementById(idButtonBook)
-					.onclick = function () {
+				document.getElementById(idButtonBook).onclick =
+					function () {
 						var input = document.getElementById(idInput);
 
 						// remove all html except line breaks
@@ -166,6 +167,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 							input.focus();
 							document.getElementById(idLoader).style.visibility = isEnabled ? 'hidden' : 'visible';
 						}
+
 						setEnabled(false);
 
 						input.innerHTML = '';
@@ -188,12 +190,8 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						var synchronizedLineProcessor = function (statusOfPreviousLine?) {
 							if (linePrevious) {
 								input.innerHTML =
-									(input.innerHTML
-										? input.innerHTML + '<br>'
-										: '')
-									+ (statusOfPreviousLine
-										? '<span class="pill" style="background-color: ' + (statusOfPreviousLine === statusOfPreviousLineDone ? 'green' : 'red') + ';">' + statusOfPreviousLine + '</span>'
-										: '')
+									(input.innerHTML ? input.innerHTML + '<br>' : '')
+									+ (statusOfPreviousLine ? `<span class="pill" style="background-color: ${statusOfPreviousLine === statusOfPreviousLineDone ? 'green' : 'red'};">${statusOfPreviousLine}</span>` : '')
 									+ linePrevious;
 								input.scrollTop = input.scrollHeight; // https://stackoverflow.com/questions/40495860/how-to-scroll-to-automatically-scroll-to-the-bottom-of-an-editable-div-onload/40506676#40506676
 							}
@@ -209,24 +207,18 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						}, 0);
 					};
 
-				document.getElementById(idButtonClear)
-					.onclick = function () { // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
+				document.getElementById(idButtonClear).onclick =
+					function () { // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
 						var input = document.getElementById(idInput);
 						input.innerHTML = ''; // https://stackoverflow.com/questions/3450593/how-do-i-clear-the-content-of-a-div-using-javascript
 						input.focus();
 					};
 
-				document.getElementById(idButtonClose)
-					.onclick = function () {
-						clear();
-					};
+				document.getElementById(idButtonClose).onclick = clear;
 
 				var buttondelete = document.getElementById(idButtonDelete);
 				if (buttondelete) { // not deployed in production
-					buttondelete
-						.onclick = function () {
-							delete2019();
-						};
+					buttondelete.onclick = delete2019;
 				}
 
 				document.onkeydown = function (event: any) {
@@ -324,12 +316,15 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				function isInvaliDigit(stringTime) {
 					return isNaN(stringTime.charAt(0)) || isNaN(stringTime.charAt(1)) || isNaN(stringTime.charAt(3)) || isNaN(stringTime.charAt(4));
 				}
+
 				function isInvalidHour(integerHour) {
 					return isNaN(integerHour) || integerHour < 0 || integerHour > 23;
 				}
+
 				function isInvalidMinute(integerMinute) {
 					return isNaN(integerMinute) || integerMinute < 0 || integerMinute > 59;
 				}
+
 				// valid delimiters
 				if (':' !== stringTimeBegin.charAt(2) || ':' !== stringTimeEnd.charAt(2)) {
 					return;
@@ -418,6 +413,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			// console.log('APP_UserDetailUuid = ' + properties.APP_UserDetailUuid);
 			queryTaskIdAndProjectIdForJiraKey(properties, callback);
 		}
+
 		if (cacheUserDetailUuid) {
 			nextStep(); // not deferred, because async xhr starts immediately in next step
 			return; // avoid running callback too early
@@ -457,6 +453,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 			createEntity(properties, callback);
 		}
+
 		if (cacheTaskIdAndProjectId.has(properties.jiraKey)) {
 			nextStep(); // not deferred, because async xhr starts immediately in next step
 			return; // avoid running callback too early
@@ -590,6 +587,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			}
 		});
 	}
+
 	return methods;
 })();
 
