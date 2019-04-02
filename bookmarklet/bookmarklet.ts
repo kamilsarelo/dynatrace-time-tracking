@@ -22,9 +22,9 @@ function main() {
 </div>`;
 		document.body.appendChild(dummy.querySelector('div')); // https://developer.mozilla.org/de/docs/Web/API/Document/body and https://stackoverflow.com/questions/9614932/best-way-to-create-large-static-dom-elements-in-javascript
 
-		window.setTimeout(function () {
+		window.setTimeout(() => {
 			// https://stackoverflow.com/questions/18048338/how-can-i-execute-a-script-after-calling-window-location-href
-			// window.onload = function () { ... cannot be performed after the redirect
+			// window.onload = () => { ... cannot be performed after the redirect
 			window.location.href = url;
 		}, 1000);
 
@@ -49,14 +49,14 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 	var statusOfPreviousLineDone = 'done';
 
-	methods['createContent'] = function () {
+	methods['createContent'] = () => {
 		var idCss = 'com_kamilsarelo_dynatrace_timetracking_css';
 		var idHtml = 'com_kamilsarelo_dynatrace_timetracking_html'; // https://stackoverflow.com/questions/6028211/what-is-the-standard-naming-convention-for-html-css-ids-and-classes/37797488#37797488
 
 		// clear previous instances
 		function clear() { // or:  var clear = function() {
-			[idHtml, idCss].forEach(function (id) {
-				document.querySelectorAll('#' + id).forEach(function (element) {
+			[idHtml, idCss].forEach((id) => {
+				document.querySelectorAll('#' + id).forEach((element) => {
 					element.parentNode.removeChild(element); //https://stackoverflow.com/questions/8830839/javascript-dom-remove-element/8830882
 				});
 			});
@@ -64,8 +64,8 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 		clear();
 
-		(function () { // or: function loadCss() { | var loadCss = function() {
-			return new Promise(function (resolve, reject) { // https://stackoverflow.com/questions/574944/how-to-load-up-css-files-using-javascript/51183077#51183077
+		(() => { // or: function loadCss() { | var loadCss = function() {
+			return new Promise((resolve, reject) => { // https://stackoverflow.com/questions/574944/how-to-load-up-css-files-using-javascript/51183077#51183077
 				// CSS
 
 				var link = document.createElement('link');
@@ -76,13 +76,13 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				// link.href = 'https://cdn.jsdelivr.net/gh/kamilsarelo/timetracking/bookmarklet/bookmarklet.css';
 				link.href = 'https://kamilsarelo.github.io/com.dynatrace.timetracking.bookmarklet.css?q=' + (new Date).getTime();
 				link.media = 'all';
-				link.onload = function () { // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload and https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick/6348533#6348533
+				link.onload = () => { // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload and https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick/6348533#6348533
 					resolve();
 				};
 				document.head.appendChild(link); // https://developer.mozilla.org/de/docs/Web/API/Document/head
 			});
 		})() // anonymous function call: https://stackoverflow.com/questions/7498361/defining-and-calling-function-in-one-step
-			.then(function () { // or: // loadCss().then(function () {
+			.then(() => { // or: // loadCss().then(() => {
 				// HTML
 
 				var idContent = 'com_kamilsarelo_dynatrace_timetracking_content';
@@ -123,11 +123,11 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 </div>`;
 				document.body.appendChild(dummy.querySelector('div'));
 
-				setTimeout(function () { // must be deferred, https://stackoverflow.com/questions/18509507/why-use-settimeout-in-deferred
+				setTimeout(() => { // must be deferred, https://stackoverflow.com/questions/18509507/why-use-settimeout-in-deferred
 					document.getElementById(idInput).focus();
 				}, 0);
 
-				// document.getElementById(idInput).addEventListener('paste', function (e) { // https://stackoverflow.com/questions/21257688/paste-rich-text-into-content-editable-div-and-only-keep-bold-and-italics-formatt
+				// document.getElementById(idInput).addEventListener('paste', (e) => { // https://stackoverflow.com/questions/21257688/paste-rich-text-into-content-editable-div-and-only-keep-bold-and-italics-formatt
 				// 	e.preventDefault();
 				// 	var clipboardData = e.clipboardData;
 				// 	var dataText = clipboardData.getData('text/plain');
@@ -139,18 +139,18 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				//
 				// ... good, but this is better...
 				//
-				document.getElementById(idInput).addEventListener('paste', function (e: any) { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
+				document.getElementById(idInput).addEventListener('paste', (e: any) => { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
 					e.preventDefault();
 					const content = (e.originalEvent || e).clipboardData.getData('text/plain');
 					document.execCommand('insertText', false, content);
 				});
 
 				document.getElementById(idButtonBook).onclick =
-					function () {
+					() => {
 						var input = document.getElementById(idInput);
 
 						// remove all html except line breaks
-						input.querySelectorAll('*:not(br)').forEach(function (span) { // also: ... .forEach(span => { ...
+						input.querySelectorAll('*:not(br)').forEach((span) => { // also: ... .forEach(span => { ...
 							input.removeChild(span);
 						});
 
@@ -160,7 +160,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						}
 
 						function setEnabled(isEnabled) {
-							[idButtonBook, idButtonClear, idButtonClose].forEach(function (id) {
+							[idButtonBook, idButtonClear, idButtonClose].forEach((id) => {
 								document.getElementById(id)['disabled'] = !isEnabled;
 							});
 							input.contentEditable = isEnabled;
@@ -174,7 +174,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						var linePrevious;
 
 						var lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
-						// lineArray.forEach(function (line) { ...
+						// lineArray.forEach((line) => { ...
 						// the whole booking process has to be done sequentially via synchronous xhr (xhr is parallel/async by default),
 						// so caches can work, AND most importantly no duplicate entities are created
 						// but synchronous xhr should be used in workers exclusively: https://xhr.spec.whatwg.org/#synchronous-flag
@@ -187,7 +187,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						// and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
 						//
 						// ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-						var synchronizedLineProcessor = function (statusOfPreviousLine?) {
+						var synchronizedLineProcessor = (statusOfPreviousLine?) => {
 							if (linePrevious) {
 								input.innerHTML =
 									(input.innerHTML ? input.innerHTML + '<br>' : '')
@@ -202,13 +202,13 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 								setEnabled(true);
 							}
 						};
-						setTimeout(function () { // must be deferred
+						setTimeout(() => { // must be deferred
 							synchronizedLineProcessor();
 						}, 0);
 					};
 
 				document.getElementById(idButtonClear).onclick =
-					function () { // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
+					() => { // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
 						var input = document.getElementById(idInput);
 						input.innerHTML = ''; // https://stackoverflow.com/questions/3450593/how-do-i-clear-the-content-of-a-div-using-javascript
 						input.focus();
@@ -221,7 +221,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					buttondelete.onclick = delete2019;
 				}
 
-				document.onkeydown = function (event: any) {
+				document.onkeydown = (event: any) => {
 					event = event || window.event;
 					if (event.keyCode == 27) { // ESC key
 						clear();
@@ -240,7 +240,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			return;
 		}
 
-		var properties = (function () { //anonymous function in order to use "return" and no need to deferred call of callback before each return
+		var properties = (() => { //anonymous function in order to use "return" and no need to deferred call of callback before each return
 			// 2019-03-11|12:00|16:00|...|...
 			// 0123456789 123456789 123456789
 
@@ -303,7 +303,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					return;
 				}
 				// valid date
-				if ((function () {
+				if ((() => {
 					var date = new Date();
 					date.setFullYear(integerYear, integerMonth - 1, integerDay);
 					return date.getFullYear() !== integerYear || date.getMonth() !== integerMonth - 1 || date.getDate() !== integerDay; // https://ctrlq.org/code/20109-javascript-date-valid
@@ -384,7 +384,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		xhrGet('/odata/APP_Timesheet'
 			+ '?$filter=APP_BeginTime eq datetime\'' + properties.APP_BeginTime + '\''
 			+ ' or APP_EndTime eq datetime\'' + properties.APP_EndTime + '\'')
-			.then(function (response: string) {
+			.then((response: string) => {
 				// console.log(response);
 				var json = JSON.parse(response);
 				if (json && json.value) {
@@ -401,7 +401,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				}
 				callback('error');
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in checkIfEntityWithEqualBeginOrEndTimeAlreadyExists()', error);
 				callback(error.status || 'error');
 			})
@@ -420,7 +420,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		}
 		xhrGet('/odata/APP_UserDetail'
 			+ '?$select=APP_UserDetailUuid')
-			.then(function (response: string) {
+			.then((response: string) => {
 				// console.log(response);
 				var json = JSON.parse(response);
 				if (json && json.value) {
@@ -436,7 +436,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				}
 				callback('error');
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in queryUserId()', error);
 				callback(error.status || 'error');
 			});
@@ -461,7 +461,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 		xhrGet('/odata/APP_Task'
 			+ '?$filter=APP_Code eq \'' + properties.jiraKey + '\''
 			+ '&$select=APP_TaskUuid,APP_ProjectUuid')
-			.then(function (response: string) {
+			.then((response: string) => {
 				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
@@ -479,7 +479,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				}
 				callback('error');
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in queryTaskIdAndProjectIdForJiraKey()', error);
 				callback(error.status || 'error');
 			});
@@ -500,11 +500,11 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			// 'USR_MedicalConfirmationReceived': false
 		});
 		xhrPost('/odata/APP_Timesheet', json)
-			.then(function (response) {
+			.then((response) => {
 				// console.log('booked');
 				callback(statusOfPreviousLineDone);
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in createEntity()', error);
 				callback(error.status || 'error');
 			})
@@ -516,11 +516,11 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ ' and APP_BeginTime ge datetime\'2019-04-01T00:00:00\''
 			+ ' and APP_EndTime le datetime\'2020-01-01T00:00:00\''
 			+ '&$select=APP_TimesheetUuid')
-			.then(function (response: string) {
+			.then((response: string) => {
 				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
-						json.value.forEach(function (properties) { // delete doesn't has to be synchronized, there is nothing that depens on each other
+						json.value.forEach((properties) => { // delete doesn't has to be synchronized, there is nothing that depens on each other
 							deleteEntity(properties.APP_TimesheetUuid);
 						});
 					} else {
@@ -530,17 +530,17 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					console.log('ERROR: on JSON.parse() in delete2019()');
 				}
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in delete2019()', error);
 			});
 	}
 
 	function deleteEntity(APP_TimesheetUuid) {
 		xhrDelete('/odata/APP_Timesheet(guid\'' + APP_TimesheetUuid + '\')')
-			.then(function (response) {
+			.then((response) => {
 				console.log('deleted APP_Timesheet entity with UUID: ' + APP_TimesheetUuid);
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.log('ERROR: in deleteEntity()', error);
 			});
 	}
@@ -560,8 +560,8 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 	function xhr(url, method?, json?) {
 		const request = new XMLHttpRequest();
 
-		return new Promise(function (resolve, reject) {
-			request.onreadystatechange = function () {
+		return new Promise((resolve, reject) => {
+			request.onreadystatechange = () => {
 				if (request.readyState !== 4) return; // 4 is DONE, https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
 				if (request.status >= 200 && request.status < 300) {
 					// console.dir(request);
