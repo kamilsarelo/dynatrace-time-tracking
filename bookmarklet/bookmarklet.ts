@@ -1,3 +1,5 @@
+import './bookmarklet.scss';
+
 // console.clear();
 
 function main() {

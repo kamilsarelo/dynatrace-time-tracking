@@ -15,27 +15,17 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.css$/,
-        loader: 'css-loader',
-        exclude: /node_modules/
-      },
-      {
         test: /\.scss$/,
-        use: [
-          'style-loader',
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader'
-        ],
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
         exclude: /node_modules/
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js', '.scss', '.css']
+    extensions: ['.ts', '.scss']
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: 'bookmarklet/dist/bookmarklet.css'})
+    new MiniCssExtractPlugin({filename: 'bookmarklet.css'})
   ],
   devtool: 'source-map'
 };
