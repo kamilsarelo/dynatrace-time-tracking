@@ -9,10 +9,10 @@ function main() {
 
 	console.log('bookmarklet called');
 
-	var url = 'https://dynatrace.timecockpit.com';
+	const url = 'https://dynatrace.timecockpit.com';
 
 	if (window.location.origin !== url) {
-		var dummy = document.createElement('dummy');
+		const dummy = document.createElement('dummy');
 
 		dummy.innerHTML =
 			`<div style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.66); display: grid;">
@@ -40,18 +40,18 @@ function main() {
 var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-helper-library-like-lodash-and-underscore.js/
 	'use strict';
 
-	var methods = {};
+	const methods = {};
 
 	// caches
-	var cacheUserDetailUuid;
-	var cacheTaskIdAndProjectId = new Map();
-	var cacheTimesheetTypeUuid = 'cd4f750b-85f8-41f8-b193-9c82e23f82eb';
+	let cacheUserDetailUuid;
+	const cacheTaskIdAndProjectId = new Map();
+	const cacheTimesheetTypeUuid = 'cd4f750b-85f8-41f8-b193-9c82e23f82eb';
 
-	var statusOfPreviousLineDone = 'done';
+	const statusOfPreviousLineDone = 'done';
 
 	methods['createContent'] = () => {
-		var idCss = 'com_kamilsarelo_dynatrace_timetracking_css';
-		var idHtml = 'com_kamilsarelo_dynatrace_timetracking_html'; // https://stackoverflow.com/questions/6028211/what-is-the-standard-naming-convention-for-html-css-ids-and-classes/37797488#37797488
+		const idCss = 'com_kamilsarelo_dynatrace_timetracking_css';
+		const idHtml = 'com_kamilsarelo_dynatrace_timetracking_html'; // https://stackoverflow.com/questions/6028211/what-is-the-standard-naming-convention-for-html-css-ids-and-classes/37797488#37797488
 
 		// clear previous instances
 		function clear() { // or:  var clear = function() {
@@ -68,7 +68,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			return new Promise((resolve, reject) => { // https://stackoverflow.com/questions/574944/how-to-load-up-css-files-using-javascript/51183077#51183077
 				// CSS
 
-				var link = document.createElement('link');
+				const link = document.createElement('link');
 				link.id = idCss;
 				link.rel = 'stylesheet';
 				link.type = 'text/css';
@@ -85,20 +85,20 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			.then(() => { // or: // loadCss().then(() => {
 				// HTML
 
-				var idContent = 'com_kamilsarelo_dynatrace_timetracking_content';
-				var idHeader = 'com_kamilsarelo_dynatrace_timetracking_header';
-				var idMain = 'com_kamilsarelo_dynatrace_timetracking_main';
-				var idInput = 'com_kamilsarelo_dynatrace_timetracking_input';
-				var idFooter = 'com_kamilsarelo_dynatrace_timetracking_footer';
-				var idFooterLeft = 'com_kamilsarelo_dynatrace_timetracking_footer_left';
-				var idFooterRight = 'com_kamilsarelo_dynatrace_timetracking_footer_right';
-				var idButtonBook = 'com_kamilsarelo_dynatrace_timetracking_action_book';
-				var idButtonClear = 'com_kamilsarelo_dynatrace_timetracking_action_clear';
-				var idButtonClose = 'com_kamilsarelo_dynatrace_timetracking_action_close';
-				var idButtonDelete = 'com_kamilsarelo_dynatrace_timetracking_action_delete';
-				var idLoader = 'com_kamilsarelo_dynatrace_timetracking_loader';
+				const idContent = 'com_kamilsarelo_dynatrace_timetracking_content';
+				const idHeader = 'com_kamilsarelo_dynatrace_timetracking_header';
+				const idMain = 'com_kamilsarelo_dynatrace_timetracking_main';
+				const idInput = 'com_kamilsarelo_dynatrace_timetracking_input';
+				const idFooter = 'com_kamilsarelo_dynatrace_timetracking_footer';
+				const idFooterLeft = 'com_kamilsarelo_dynatrace_timetracking_footer_left';
+				const idFooterRight = 'com_kamilsarelo_dynatrace_timetracking_footer_right';
+				const idButtonBook = 'com_kamilsarelo_dynatrace_timetracking_action_book';
+				const idButtonClear = 'com_kamilsarelo_dynatrace_timetracking_action_clear';
+				const idButtonClose = 'com_kamilsarelo_dynatrace_timetracking_action_close';
+				const idButtonDelete = 'com_kamilsarelo_dynatrace_timetracking_action_delete';
+				const idLoader = 'com_kamilsarelo_dynatrace_timetracking_loader';
 
-				var dummy = document.createElement('dummy');
+				const dummy = document.createElement('dummy');
 				dummy.innerHTML =
 					`<div id="${idHtml}">
 	<div id="${idContent}">
@@ -147,14 +147,14 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 				document.getElementById(idButtonBook).onclick =
 					() => {
-						var input = document.getElementById(idInput);
+						const input = document.getElementById(idInput);
 
 						// remove all html except line breaks
 						input.querySelectorAll('*:not(br)').forEach((span) => { // also: ... .forEach(span => { ...
 							input.removeChild(span);
 						});
 
-						var string = input.innerText; // or https://developer.mozilla.org/de/docs/Web/API/Node/textContent but textContent ignores line breaks
+						const string = input.innerText; // or https://developer.mozilla.org/de/docs/Web/API/Node/textContent but textContent ignores line breaks
 						if (string.trim().length === 0) {
 							return;
 						}
@@ -171,9 +171,9 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						setEnabled(false);
 
 						input.innerHTML = '';
-						var linePrevious;
+						let linePrevious;
 
-						var lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
+						const lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
 						// lineArray.forEach((line) => { ...
 						// the whole booking process has to be done sequentially via synchronous xhr (xhr is parallel/async by default),
 						// so caches can work, AND most importantly no duplicate entities are created
@@ -187,7 +187,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						// and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
 						//
 						// ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-						var synchronizedLineProcessor = (statusOfPreviousLine?) => {
+						const synchronizedLineProcessor = (statusOfPreviousLine?) => {
 							if (linePrevious) {
 								input.innerHTML =
 									(input.innerHTML ? input.innerHTML + '<br>' : '')
@@ -209,14 +209,14 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 				document.getElementById(idButtonClear).onclick =
 					() => { // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
-						var input = document.getElementById(idInput);
+						const input = document.getElementById(idInput);
 						input.innerHTML = ''; // https://stackoverflow.com/questions/3450593/how-do-i-clear-the-content-of-a-div-using-javascript
 						input.focus();
 					};
 
 				document.getElementById(idButtonClose).onclick = clear;
 
-				var buttondelete = document.getElementById(idButtonDelete);
+				const buttondelete = document.getElementById(idButtonDelete);
 				if (buttondelete) { // not deployed in production
 					buttondelete.onclick = delete2019;
 				}
@@ -240,7 +240,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			return;
 		}
 
-		var properties = (() => { //anonymous function in order to use "return" and no need to deferred call of callback before each return
+		const properties = (() => { //anonymous function in order to use "return" and no need to deferred call of callback before each return
 			// 2019-03-11|12:00|16:00|...|...
 			// 0123456789 123456789 123456789
 
@@ -256,20 +256,20 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			}
 
 			// date and times
-			var stringDate = line.substr(0, 10); // https://www.w3schools.com/jsref/jsref_obj_string.asp
-			var stringTimeBegin = line.substr(11, 5);
-			var stringTimeEnd = line.substr(17, 5);
+			const stringDate = line.substr(0, 10); // https://www.w3schools.com/jsref/jsref_obj_string.asp
+			const stringTimeBegin = line.substr(11, 5);
+			const stringTimeEnd = line.substr(17, 5);
 			// Jira key
-			var indexOfPipe = line.indexOf('|', 23);
+			const indexOfPipe = line.indexOf('|', 23);
 			if (indexOfPipe === -1) { // no delimiter after Jira key
 				return;
 			}
-			var stringJiraKey = line.substring(23, indexOfPipe); // https://stackoverflow.com/questions/2243824/what-is-the-difference-between-string-slice-and-string-substring
+			const stringJiraKey = line.substring(23, indexOfPipe); // https://stackoverflow.com/questions/2243824/what-is-the-difference-between-string-slice-and-string-substring
 			if (stringJiraKey === '') {
 				return;
 			}
 			// comment
-			var stringComment = line.substr(indexOfPipe + 1);
+			const stringComment = line.substr(indexOfPipe + 1);
 			if (stringComment === '') { // empty comment
 				return;
 			}
@@ -286,25 +286,25 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					return;
 				}
 				// valid year
-				var integerYearCurrent = new Date().getFullYear();
-				var integerYear = parseInt(stringDate.substr(0, 4), 10);
+				const integerYearCurrent = new Date().getFullYear();
+				const integerYear = parseInt(stringDate.substr(0, 4), 10);
 				// if (isNaN(integerYear) || integerYear < 2019 || integerYear > 2046) {
 				if (isNaN(integerYear) || integerYear < integerYearCurrent || integerYear > integerYearCurrent) {
 					return;
 				}
 				// valid month
-				var integerMonth = parseInt(stringDate.substr(5, 2), 10);
+				const integerMonth = parseInt(stringDate.substr(5, 2), 10);
 				if (isNaN(integerYear) || integerMonth < 1 || integerMonth > 12) {
 					return;
 				}
 				// valid day
-				var integerDay = parseInt(stringDate.substr(8, 2), 10);
+				const integerDay = parseInt(stringDate.substr(8, 2), 10);
 				if (isNaN(integerYear) || integerDay < 1 || integerDay > 31) {
 					return;
 				}
 				// valid date
 				if ((() => {
-					var date = new Date();
+					const date = new Date();
 					date.setFullYear(integerYear, integerMonth - 1, integerDay);
 					return date.getFullYear() !== integerYear || date.getMonth() !== integerMonth - 1 || date.getDate() !== integerDay; // https://ctrlq.org/code/20109-javascript-date-valid
 				})()) {
@@ -334,14 +334,14 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					return;
 				}
 				// valid hours
-				var integerHourBegin = parseInt(stringTimeBegin.substr(0, 2), 10);
-				var integerHourEnd = parseInt(stringTimeEnd.substr(0, 2), 10);
+				const integerHourBegin = parseInt(stringTimeBegin.substr(0, 2), 10);
+				const integerHourEnd = parseInt(stringTimeEnd.substr(0, 2), 10);
 				if (isInvalidHour(integerHourBegin) || isInvalidHour(integerHourEnd)) {
 					return;
 				}
 				// valid minutes
-				var integerMinuteBegin = parseInt(stringTimeBegin.substr(3, 2), 10);
-				var integerMinuteEnd = parseInt(stringTimeEnd.substr(3, 2), 10);
+				const integerMinuteBegin = parseInt(stringTimeBegin.substr(3, 2), 10);
+				const integerMinuteEnd = parseInt(stringTimeEnd.substr(3, 2), 10);
 				if (isInvalidMinute(integerMinuteBegin) || isInvalidMinute(integerMinuteEnd)) {
 					return;
 				}
@@ -352,10 +352,10 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				}
 			}
 
-			var APP_BeginTime = stringDate + 'T' + stringTimeBegin + ':00';
-			var APP_EndTime = stringDate + 'T' + stringTimeEnd + ':00';
+			const APP_BeginTime = stringDate + 'T' + stringTimeBegin + ':00';
+			const APP_EndTime = stringDate + 'T' + stringTimeEnd + ':00';
 			// var APP_Description = encodeURIComponent(stringComment); // encoding not necessary, https://stackoverflow.com/questions/332872/encode-url-in-javascript/6171234#6171234
-			var APP_Description = stringComment;
+			const APP_Description = stringComment;
 
 			return { // https://stackoverflow.com/questions/12272239/javascript-function-returning-an-object
 				jiraKey: stringJiraKey,
@@ -386,7 +386,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ ' or APP_EndTime eq datetime\'' + properties.APP_EndTime + '\'')
 			.then((response: string) => {
 				// console.log(response);
-				var json = JSON.parse(response);
+				const json = JSON.parse(response);
 				if (json && json.value) {
 					if (json.value.length > 0) {
 						console.log('ERROR: APP_Timesheet entity with equal start- (' + properties.APP_BeginTime + ') and/or end-time (' + properties.APP_EndTime + ') exists');
@@ -422,7 +422,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ '?$select=APP_UserDetailUuid')
 			.then((response: string) => {
 				// console.log(response);
-				var json = JSON.parse(response);
+				const json = JSON.parse(response);
 				if (json && json.value) {
 					if (json.value.length > 0) {
 						cacheUserDetailUuid = json.value[0].APP_UserDetailUuid;
@@ -444,7 +444,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 
 	function queryTaskIdAndProjectIdForJiraKey(properties, callback) {
 		function nextStep() {
-			var cache = cacheTaskIdAndProjectId.get(properties.jiraKey);
+			const cache = cacheTaskIdAndProjectId.get(properties.jiraKey);
 			properties.APP_TaskUuid = cache.APP_TaskUuid;
 			properties.APP_ProjectUuid = cache.APP_ProjectUuid;
 
@@ -462,7 +462,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ '?$filter=APP_Code eq \'' + properties.jiraKey + '\''
 			+ '&$select=APP_TaskUuid,APP_ProjectUuid')
 			.then((response: string) => {
-				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
+				const json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
 						cacheTaskIdAndProjectId.set(properties.jiraKey, {
@@ -486,7 +486,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 	}
 
 	function createEntity(properties, callback) {
-		var json = JSON.stringify({
+		const json = JSON.stringify({
 			// 'APP_TimesheetUuid': https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript/2117523#2117523
 			'APP_BeginTime': properties.APP_BeginTime,
 			'APP_EndTime': properties.APP_EndTime,
@@ -517,7 +517,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			+ ' and APP_EndTime le datetime\'2020-01-01T00:00:00\''
 			+ '&$select=APP_TimesheetUuid')
 			.then((response: string) => {
-				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
+				const json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
 				if (json && json.value) {
 					if (json.value.length > 0) {
 						json.value.forEach((properties) => { // delete doesn't has to be synchronized, there is nothing that depens on each other
