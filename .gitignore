@@ -1,6 +1,8 @@
+*.token
+
 /.idea
 
-/bookmarklet/dist
+/bookmarklet/dist/**/*
 /node_modules
 
 # ignore all .DS_Store hidden system files

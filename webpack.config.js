@@ -35,7 +35,7 @@ module.exports = {
     extensions: ['.ts', '.js', '.scss', '.css']
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: 'bookmarklet.css'})
+    new MiniCssExtractPlugin({filename: 'bookmarklet/dist/bookmarklet.css'})
   ],
   devtool: 'source-map'
 };
