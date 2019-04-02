@@ -19,7 +19,12 @@
 	display: grid;
 	grid-template-rows: auto 1fr auto;
 
-	position: absolute; top: 100px; bottom: 100px; left: 100px; right: 100px;
+	position: absolute;
+	top: 100px;
+	bottom: 100px;
+	left: 100px;
+	right: 100px;
+
 	padding: 16px;
 	white-space: nowrap;
 	overflow: scroll;
@@ -65,6 +70,7 @@
 #com_kamilsarelo_dynatrace_timetracking_footer {
 	justify-self: center;
 }
+
 #com_kamilsarelo_dynatrace_timetracking_footer button:nth-of-type(n+2) {
 	margin-left: 8px;
 }
@@ -252,7 +258,7 @@
 	height: 32px;
 	background-color: currentColor;
 	opacity: 0;
-	transform: translate(-50%, -50%) scale(1) ;
+	transform: translate(-50%, -50%) scale(1);
 	transition: opacity 1s, transform 0.5s;
 }
 
@@ -346,7 +352,7 @@
 	height: 32px;
 	background-color: currentColor;
 	opacity: 0;
-	transform: translate(-50%, -50%) scale(1) ;
+	transform: translate(-50%, -50%) scale(1);
 	transition: opacity 1s, transform 0.5s;
 }
 
@@ -397,6 +403,7 @@
 
 	z-index: 10000;
 }
+
 .lds-ellipsis div {
 	position: absolute;
 	top: 27px;
@@ -406,22 +413,27 @@
 	background: rgb(33, 150, 243);
 	animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
+
 .lds-ellipsis div:nth-child(1) {
 	left: 6px;
 	animation: lds-ellipsis1 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(2) {
 	left: 6px;
 	animation: lds-ellipsis2 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(3) {
 	left: 26px;
 	animation: lds-ellipsis2 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(4) {
 	left: 45px;
 	animation: lds-ellipsis3 0.6s infinite;
 }
+
 @keyframes lds-ellipsis1 {
 	0% {
 		transform: scale(0);
@@ -430,6 +442,7 @@
 		transform: scale(1);
 	}
 }
+
 @keyframes lds-ellipsis3 {
 	0% {
 		transform: scale(1);
@@ -438,6 +451,7 @@
 		transform: scale(0);
 	}
 }
+
 @keyframes lds-ellipsis2 {
 	0% {
 		transform: translate(0, 0);
@@ -478,15 +492,20 @@
 }
 
 @-webkit-keyframes sk-bouncedelay {
-	0%, 80%, 100% { -webkit-transform: scale(0) }
-	40% { -webkit-transform: scale(1.0) }
+	0%, 80%, 100% {
+		-webkit-transform: scale(0)
+	}
+	40% {
+		-webkit-transform: scale(1.0)
+	}
 }
 
 @keyframes sk-bouncedelay {
-	0%, 80%, 100% { 
+	0%, 80%, 100% {
 		-webkit-transform: scale(0);
 		transform: scale(0);
-	} 40% { 
+	}
+	40% {
 		-webkit-transform: scale(1.0);
 		transform: scale(1.0);
 	}
@@ -502,6 +521,7 @@
 	width: 100%;
 	height: 100%;
 }
+
 .spin-wrapper .spinner {
 	position: absolute;
 
@@ -516,12 +536,14 @@
 	border-radius: 50%;
 	animation: spin 2s linear infinite;
 }
+
 .spin-wrapper .spinner:before, .spin-wrapper .spinner:after {
 	content: "";
 	position: absolute;
 	border: 4px solid transparent;
 	border-radius: 50%;
 }
+
 .spin-wrapper .spinner:before {
 	border-top-color: rgb(33, 150, 243);
 	top: -12px;
@@ -530,6 +552,7 @@
 	bottom: -12px;
 	animation: spin 3s linear infinite;
 }
+
 .spin-wrapper .spinner:after {
 	border-top-color: rgb(33, 150, 243);
 	top: 6px;
@@ -541,9 +564,9 @@
 
 @keyframes spin {
 	0% {
-	transform: rotate(0deg);
+		transform: rotate(0deg);
 	}
 	100% {
-	transform: rotate(360deg);
+		transform: rotate(360deg);
 	}
 }

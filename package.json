@@ -1,0 +1,35 @@
+{
+  "name": "timetracking",
+  "version": "1.0.0",
+  "description": "Dynatrace working time tracking via Excel spreadsheet",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rfv bookmarklet/dist/*",
+    "build": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kamilsarelo/timetracking.git"
+  },
+  "keywords": [
+    "timetracking",
+    "bookmarklet"
+  ],
+  "author": "Kamil Sarelo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kamilsarelo/timetracking/issues"
+  },
+  "homepage": "https://github.com/kamilsarelo/timetracking#readme",
+  "devDependencies": {
+    "css-loader": "^2.1.1",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.1",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  }
+}
