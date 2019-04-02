@@ -12,7 +12,7 @@ javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=
 ```
 2. download the latest spreadsheet and migrate your data from the old one (safest way to do this: copy cells in old spreadsheet, paste and cut in Notepad, paste in new spredsheet)
 
-3. copy the Timecockpit-relevant strings from the latest spreadsheet:
+3. copy the Timecockpit-prepared strings from the latest spreadsheet:
 
 ![](./resouces/spreadsheet.png)
 
