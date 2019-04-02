@@ -98,29 +98,28 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				var idLoader = 'com_kamilsarelo_dynatrace_timetracking_loader';
 
 				var dummy = document.createElement('dummy');
-				dummy.innerHTML = '\
-					<div id="' + idHtml + '">\
-						<div id="' + idContent + '">\
-							<div id="' + idHeader + '">\
-							</div>\
-							<div id="' + idMain + '">\
-								<div id="' + idInput + '" contenteditable="true">\
-									&#xfeff;\
-								</div>\
-								<div id="' + idLoader + '">\
-									<div class="spin-wrapper">\
-										<div class="spinner">\
-										</div>\
-									</div>\
-								</div>\
-							</div>\
-							<div id="' + idFooter + '">\
-								<button id="' + idButtonBook + '" class="pure-material-button-contained">Book</button>\
-								<button id="' + idButtonClear + '" class="pure-material-button-outlined">Clear</button>\
-								<button id="' + idButtonClose + '" class="pure-material-button-outlined">Close</button>\
-							</div>\
-						</div>\
-					</div>';
+				dummy.innerHTML =
+`<div id="${idHtml}">
+    <div id="${idContent}">
+        <div id="${idHeader}"></div>
+        <div id="${idMain}">
+            <div id="${idInput}" contenteditable="true">
+                &#xfeff;
+            </div>
+            <div id="${idLoader}">
+                <div class="spin-wrapper">
+                    <div class="spinner">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="${idFooter}">
+            <button id="${idButtonBook}" class="pure-material-button-contained">Book</button>\
+            <button id="${idButtonClear}" class="pure-material-button-outlined">Clear</button>\
+            <button id="${idButtonClose}" class="pure-material-button-outlined">Close</button>\
+        </div>
+    </div>
+</div>`;
 				document.body.appendChild(dummy.querySelector('div'));
 
 				setTimeout(function () { // must be deferred, https://stackoverflow.com/questions/18509507/why-use-settimeout-in-deferred
