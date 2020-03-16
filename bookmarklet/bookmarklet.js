@@ -1,11 +1,11 @@
 // console.clear();
 
 function main() {
-	if (window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING) {
+	if (window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING) {
 		console.log('ERROR: bookmarklet is already running');
 		return; // https://stackoverflow.com/questions/550574/how-to-terminate-the-script-in-javascript
 	}
-	window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
+	window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
 
 	console.log('bookmarklet called');
 
@@ -31,7 +31,7 @@ function main() {
 		if (document.readyState && document.readyState === 'complete') {
 			_.createContent();
 		} else {
-			window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+			window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = false;
 		}
 	}
 }
@@ -43,7 +43,6 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 	// caches
 	var cacheUserDetailUuid;
 	var cacheTaskIdAndProjectId = new Map();
-	var cacheTimesheetTypeUuid = 'cd4f750b-85f8-41f8-b193-9c82e23f82eb';
 
 	var statusOfPreviousLineDone = 'done';
 
@@ -72,7 +71,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				link.type = 'text/css';
 				// link.href = 'https://localhost/bookmarklet.css';
 				// link.href = 'https://cdn.jsdelivr.net/gh/kamilsarelo/timetracking/bookmarklet/bookmarklet.css';
-				link.href = 'https://kamilsarelo.gitlab.io/com.dynatrace.timetracking.bookmarklet.css?q=' + (new Date).getTime();
+				link.href = 'https://christian-fischer.gitlab.io/com.dynatrace.timetracking.bookmarklet.css?q=' + (new Date).getTime();
 				link.media = 'all';
 				link.onload = function () { // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload and https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick/6348533#6348533
 					resolve();
@@ -91,10 +90,10 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				var idFooter = 'com_kamilsarelo_dynatrace_timetracking_footer';
 				var idFooterLeft = 'com_kamilsarelo_dynatrace_timetracking_footer_left';
 				var idFooterRight = 'com_kamilsarelo_dynatrace_timetracking_footer_right';
+				var idSelectType = 'com_kamilsarelo_dynatrace_timetracking_select_type';
 				var idButtonBook = 'com_kamilsarelo_dynatrace_timetracking_action_book';
 				var idButtonClear = 'com_kamilsarelo_dynatrace_timetracking_action_clear';
 				var idButtonClose = 'com_kamilsarelo_dynatrace_timetracking_action_close';
-				var idButtonDelete = 'com_kamilsarelo_dynatrace_timetracking_action_delete';
 				var idLoader = 'com_kamilsarelo_dynatrace_timetracking_loader';
 
 				var dummy = document.createElement('dummy');
@@ -102,6 +101,10 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					<div id="' + idHtml + '">\
 						<div id="' + idContent + '">\
 							<div id="' + idHeader + '">\
+								<select id"' + idSelectType + '">\
+									<option value="cd4f750b-85f8-41f8-b193-9c82e23f82eb" selected="selected">Office</option>\
+									<option value="0ad94cf7-955c-45dc-b49e-20be0f449b75">Home Office</option>\
+								</select>\
 							</div>\
 							<div id="' + idMain + '">\
 								<div id="' + idInput + '" contenteditable="true">\
@@ -169,6 +172,9 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						}
 						setEnabled(false);
 
+						var selectType = document.getElementById(idSelectType);
+						var timesheetTypeUuid = selectType.options[selectType.selectedIndex].value;
+
 						input.innerHTML = '';
 						var linePrevious;
 
@@ -200,7 +206,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 							}
 							if (lineArray.length > 0) {
 								linePrevious = lineArray.shift(); // https://love2dev.com/blog/javascript-remove-from-array/
-								checkLineAndParseProperties(linePrevious, synchronizedLineProcessor); // first step, forwards to consecutive steps
+								checkLineAndParseProperties(linePrevious, timesheetTypeUuid, synchronizedLineProcessor); // first step, forwards to consecutive steps
 							} else {
 								setEnabled(true);
 							}
@@ -222,14 +228,6 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						clear();
 					};
 
-				var buttondelete = document.getElementById(idButtonDelete);
-				if (buttondelete) { // not deployed in production
-					buttondelete
-						.onclick = function () {
-							delete2019();
-						};
-				}
-
 				document.onkeydown = function (event) {
 					event = event || window.event;
 					if (event.keyCode == 27) { // ESC key
@@ -238,11 +236,11 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					}
 				};
 
-				window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_RUNNING = false;
+				window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = false;
 			});
 	};
 
-	function checkLineAndParseProperties(line, callback) {
+	function checkLineAndParseProperties(line, timesheetTypeUuid, callback) {
 		line = line.trim();
 		if (!line) {
 			callback(); // no error on empty line
@@ -370,7 +368,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			};
 		})();
 		if (properties) {
-			properties.USR_TimesheetTypeUuid = cacheTimesheetTypeUuid;
+			properties.USR_TimesheetTypeUuid = timesheetTypeUuid;
 
 			// console.log('properties');
 			// console.log('  jiraKey               = ' + properties.jiraKey);
@@ -512,31 +510,6 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				console.log('ERROR: in createEntity()', error);
 				callback(error.status || 'error');
 			})
-	}
-
-	function delete2019() {
-		xhrGet('/odata/APP_Timesheet'
-			+ '?$filter=USR_TimesheetTypeUuid eq guid\'' + cacheTimesheetTypeUuid + '\''
-			+ ' and APP_BeginTime ge datetime\'2019-04-01T00:00:00\''
-			+ ' and APP_EndTime le datetime\'2020-01-01T00:00:00\''
-			+ '&$select=APP_TimesheetUuid')
-			.then(function (response) {
-				var json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
-				if (json && json.value) {
-					if (json.value.length > 0) {
-						json.value.forEach(function (properties) { // delete doesn't has to be synchronized, there is nothing that depens on each other
-							deleteEntity(properties.APP_TimesheetUuid);
-						});
-					} else {
-						console.log('ERROR: no APP_Timesheet entities to delete');
-					}
-				} else {
-					console.log('ERROR: on JSON.parse() in delete2019()');
-				}
-			})
-			.catch(function (error) {
-				console.log('ERROR: in delete2019()', error);
-			});
 	}
 
 	function deleteEntity(APP_TimesheetUuid) {
