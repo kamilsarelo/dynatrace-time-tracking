@@ -71,7 +71,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				link.type = 'text/css';
 				// link.href = 'https://localhost/bookmarklet.css';
 				// link.href = 'https://cdn.jsdelivr.net/gh/kamilsarelo/timetracking/bookmarklet/bookmarklet.css';
-				link.href = 'https://christian-fischer.gitlab.io/com.dynatrace.timetracking.bookmarklet.css?q=' + (new Date).getTime();
+				link.href = 'https://christian-fischer.github.io/com.dynatrace.timetracking.bookmarklet.css?q=' + (new Date).getTime();
 				link.media = 'all';
 				link.onload = function () { // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload and https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick/6348533#6348533
 					resolve();
@@ -101,7 +101,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					<div id="' + idHtml + '">\
 						<div id="' + idContent + '">\
 							<div id="' + idHeader + '">\
-								<select id"' + idSelectType + '">\
+								<select id="' + idSelectType + '">\
 									<option value="cd4f750b-85f8-41f8-b193-9c82e23f82eb" selected="selected">Office</option>\
 									<option value="0ad94cf7-955c-45dc-b49e-20be0f449b75">Home Office</option>\
 								</select>\
