@@ -377,61 +377,34 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 			// console.log('  APP_Description       = ' + properties.APP_Description);
 			// console.log('  USR_TimesheetTypeUuid = ' + properties.USR_TimesheetTypeUuid);
 
-			checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback);
+			queryUserId(properties, callback);
 		} else {
 			callback('invalid');
 		}
 	};
 
-	function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback) {
-		xhrGet('/odata/APP_Timesheet'
-			+ '?$filter=APP_BeginTime eq datetime\'' + properties.APP_BeginTime + '\''
-			+ ' or APP_EndTime eq datetime\'' + properties.APP_EndTime + '\'')
-			.then(function (response) {
-				// console.log(response);
-				var json = JSON.parse(response);
-				if (json && json.value) {
-					if (json.value.length > 0) {
-						console.log('ERROR: APP_Timesheet entity with equal start- (' + properties.APP_BeginTime + ') and/or end-time (' + properties.APP_EndTime + ') exists');
-						callback('exists');
-						return;
-					} else {
-						queryUserId(properties, callback);
-						return; // avoid running callback too early
-					}
-				} else {
-					console.log('ERROR: on JSON.parse() in checkIfEntityWithEqualBeginOrEndTimeAlreadyExists()');
-				}
-				callback('error');
-			})
-			.catch(function (error) {
-				console.log('ERROR: in checkIfEntityWithEqualBeginOrEndTimeAlreadyExists()', error);
-				callback(error.status || 'error');
-			})
-	}
-
 	function queryUserId(properties, callback) {
 		function nextStep() {
 			properties.APP_UserDetailUuid = cacheUserDetailUuid;
 			// console.log('APP_UserDetailUuid = ' + properties.APP_UserDetailUuid);
-			queryTaskIdAndProjectIdForJiraKey(properties, callback);
+			
+			checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback);
 		}
 		if (cacheUserDetailUuid) {
 			nextStep(); // not deferred, because async xhr starts immediately in next step
 			return; // avoid running callback too early
 		}
-		xhrGet('/odata/APP_UserDetail'
-			+ '?$select=APP_UserDetailUuid')
+		xhrGet('/shell/user')
 			.then(function (response) {
 				// console.log(response);
 				var json = JSON.parse(response);
-				if (json && json.value) {
-					if (json.value.length > 0) {
-						cacheUserDetailUuid = json.value[0].APP_UserDetailUuid;
+				if (json) {
+					if (json.useruuid) {
+						cacheUserDetailUuid = json.useruuid;
 						nextStep();
 						return; // avoid running callback too early
 					} else {
-						console.log('ERROR: no APP_UserDetail entity not available');
+						console.log('ERROR: no useruuid available');
 					}
 				} else {
 					console.log('ERROR: on JSON.parse() in queryUserId()');
@@ -443,6 +416,34 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				callback(error.status || 'error');
 			});
 		;
+	}
+
+	function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback) {
+		xhrGet('/odata/APP_Timesheet'
+			+ '?$filter=(APP_BeginTime eq datetime\'' + properties.APP_BeginTime + '\''
+			+ ' or APP_EndTime eq datetime\'' + properties.APP_EndTime + '\')'
+			+ ' and APP_UserDetailUuid eq guid\'' + properties.APP_UserDetailUuid + '\'')
+			.then(function (response) {
+				// console.log(response);
+				var json = JSON.parse(response);
+				if (json && json.value) {
+					if (json.value.length > 0) {
+						console.log('ERROR: APP_Timesheet entity with equal start- (' + properties.APP_BeginTime + ') and/or end-time (' + properties.APP_EndTime + ') exists');
+						callback('exists');
+						return;
+					} else {
+						queryTaskIdAndProjectIdForJiraKey(properties, callback);
+						return; // avoid running callback too early
+					}
+				} else {
+					console.log('ERROR: on JSON.parse() in checkIfEntityWithEqualBeginOrEndTimeAlreadyExists()');
+				}
+				callback('error');
+			})
+			.catch(function (error) {
+				console.log('ERROR: in checkIfEntityWithEqualBeginOrEndTimeAlreadyExists()', error);
+				callback(error.status || 'error');
+			})
 	}
 
 	function queryTaskIdAndProjectIdForJiraKey(properties, callback) {
