@@ -209,6 +209,10 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 								checkLineAndParseProperties(linePrevious, timesheetTypeUuid, synchronizedLineProcessor); // first step, forwards to consecutive steps
 							} else {
 								setEnabled(true);
+								var refreshButton = document.querySelector('button\[ng-click="refresh\(\)"\]');
+								if (refreshButton) {
+									refreshButton.click();
+								}
 							}
 						}
 						setTimeout(function () { // must be deferred
