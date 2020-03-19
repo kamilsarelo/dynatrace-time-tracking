@@ -101,7 +101,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 					<div id="' + idHtml + '">\
 						<div id="' + idContent + '">\
 							<div id="' + idHeader + '">\
-								<select id="' + idSelectType + '">\
+								<select id="' + idSelectType + '" class="filament-select-css">\
 									<option value="cd4f750b-85f8-41f8-b193-9c82e23f82eb" selected="selected">Office</option>\
 									<option value="0ad94cf7-955c-45dc-b49e-20be0f449b75">Home Office</option>\
 								</select>\
