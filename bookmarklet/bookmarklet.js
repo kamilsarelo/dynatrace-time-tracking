@@ -144,7 +144,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 				//
 				document.getElementById(idInput).addEventListener('paste', function (e) { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
 					e.preventDefault();
-					content = (e.originalEvent || e).clipboardData.getData('text/plain');
+					var content = (e.originalEvent || e).clipboardData.getData('text/plain');
 					document.execCommand('insertText', false, content);
 				});
 
