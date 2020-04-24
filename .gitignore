@@ -1,7 +1,6 @@
 /.vscode
 /.idea
 
-/bookmarklet/dist/**/*
 /node_modules
 
 *.token
