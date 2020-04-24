@@ -1,3 +1,11 @@
+/.vscode
+/.idea
+
+/bookmarklet/dist/**/*
+/node_modules
+
+*.token
+
 # ignore all .DS_Store hidden system files
 .DS_Store
 
