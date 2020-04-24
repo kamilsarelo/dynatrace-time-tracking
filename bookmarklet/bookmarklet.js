@@ -153,7 +153,7 @@ var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-
 						var input = document.getElementById(idInput);
 
 						// remove all html except line breaks
-						input.querySelectorAll('*:not(br)').forEach(function (span) { // also: ... .forEach(span => { ...
+						input.querySelectorAll('span').forEach(function (span) { // also: ... .forEach(span => { ...
 							input.removeChild(span);
 						});
 
