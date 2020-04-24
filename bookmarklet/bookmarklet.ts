@@ -1,11 +1,13 @@
+import './bookmarklet.css';
+
 // console.clear();
 
 function main() {
-	if (window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING) {
+	if (window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING']) {
 		console.log('ERROR: bookmarklet is already running');
 		return; // https://stackoverflow.com/questions/550574/how-to-terminate-the-script-in-javascript
 	}
-	window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
+	window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING'] = true; // global scope var, https://stackoverflow.com/questions/9521298/verify-external-script-is-loaded
 
 	console.log('bookmarklet called');
 
@@ -31,17 +33,17 @@ function main() {
 		if (document.readyState && document.readyState === 'complete') {
 			_.createContent();
 		} else {
-			window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = false;
+			window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING'] = false;
 		}
 	}
 }
 
-const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-helper-library-like-lodash-and-underscore.js/
+var _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-js-helper-library-like-lodash-and-underscore.js/
 	'use strict';
-	const methods = {};
+	const methods: any = {};
 
 	// caches
-	const cacheUserDetailUuid;
+	let cacheUserDetailUuid;
 	const cacheTaskIdAndProjectId = new Map();
 
 	const statusOfPreviousLineDone = 'done';
@@ -144,7 +146,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 				//
 				document.getElementById(idInput).addEventListener('paste', function (e) { // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
 					e.preventDefault();
-					const content = (e.originalEvent || e).clipboardData.getData('text/plain');
+					const content = ((e as any).originalEvent || e).clipboardData.getData('text/plain');
 					document.execCommand('insertText', false, content);
 				});
 
@@ -164,7 +166,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 
 						function setEnabled(isEnabled) {
 							[idButtonBook, idButtonClear, idButtonClose].forEach(function (id) {
-								document.getElementById(id).disabled = !isEnabled;
+                (document.getElementById(id) as any).disabled = !isEnabled;
 							})
 							input.contentEditable = isEnabled;
 							input.focus();
@@ -173,10 +175,10 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 						setEnabled(false);
 
 						const selectType = document.getElementById(idSelectType);
-						const timesheetTypeUuid = selectType.options[selectType.selectedIndex].value;
+						const timesheetTypeUuid = (selectType as any).options[(selectType as any).selectedIndex].value;
 
 						input.innerHTML = '';
-						const linePrevious;
+						let linePrevious;
 
 						const lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but mind: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
 						// lineArray.forEach(function (line) { ...
@@ -192,7 +194,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 						// and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
 						//
 						// ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-						const synchronizedLineProcessor = function (statusOfPreviousLine) {
+						const synchronizedLineProcessor = function (statusOfPreviousLine?: any) {
 							if (linePrevious) {
 								input.innerHTML =
 									(input.innerHTML
@@ -211,7 +213,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 								setEnabled(true);
 								const refreshButton = document.querySelector('button\[ng-click="refresh\(\)"\]');
 								if (refreshButton) {
-									refreshButton.click();
+                  (refreshButton as any).click();
 								}
 							}
 						}
@@ -232,7 +234,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 						clear();
 					};
 
-				document.onkeydown = function (event) {
+				document.onkeydown = function (event: any) {
 					event = event || window.event;
 					if (event.keyCode == 27) { // ESC key
 						clear();
@@ -240,7 +242,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 					}
 				};
 
-				window.COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING = false;
+				window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING'] = false;
 			});
 	};
 
@@ -372,7 +374,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 			};
 		})();
 		if (properties) {
-			properties.USR_TimesheetTypeUuid = timesheetTypeUuid;
+			properties['USR_TimesheetTypeUuid'] = timesheetTypeUuid;
 
 			// console.log('properties');
 			// console.log('  jiraKey               = ' + properties.jiraKey);
@@ -391,7 +393,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 		function nextStep() {
 			properties.APP_UserDetailUuid = cacheUserDetailUuid;
 			// console.log('APP_UserDetailUuid = ' + properties.APP_UserDetailUuid);
-			
+
 			checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback);
 		}
 		if (cacheUserDetailUuid) {
@@ -399,7 +401,7 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 			return; // avoid running callback too early
 		}
 		xhrGet('/shell/user')
-			.then(function (response) {
+			.then(function (response: string) {
 				// console.log(response);
 				const json = JSON.parse(response);
 				if (json) {
@@ -528,19 +530,19 @@ const _ = (function () { // https://gomakethings.com/creating-your-own-vanilla-j
 
 	}
 
-	function xhrGet(url) {
+	function xhrGet(url): Promise<string> {
 		return xhr(url);
 	};
 
-	function xhrPost(url, json) {
+	function xhrPost(url, json): Promise<string> {
 		return xhr(url, 'POST', json);
 	};
 
-	function xhrDelete(url) {
+	function xhrDelete(url): Promise<string> {
 		return xhr(url, 'DELETE');
 	};
 
-	function xhr(url, method, json) {
+	function xhr(url, method?, json?): Promise<string> {
 		const request = new XMLHttpRequest();
 		return new Promise(function (resolve, reject) {
 			request.onreadystatechange = function () {
