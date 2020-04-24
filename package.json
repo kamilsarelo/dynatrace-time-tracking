@@ -24,7 +24,10 @@
   "homepage": "https://github.com/kamilsarelo/timetracking#readme",
   "devDependencies": {
     "css-loader": "^2.1.1",
+    "mini-css-extract-plugin": "^0.9.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "prettier": "^2.0.5",
+    "terser-webpack-plugin": "^2.3.5",
     "ts-loader": "^5.4.5",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0",
