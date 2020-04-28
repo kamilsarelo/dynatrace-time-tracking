@@ -27,7 +27,7 @@ javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=
 
 3. Copy the Timecockpit-prepared strings from the latest spreadsheet:
 
-![](./resouces/spreadsheet.png)
+![](resources/spreadsheet.png)
 
 4. Click the bookmarklet in your browser and it will:
    - redirect to Timecockpit if not open yet (click the bookmarklet again afterwards),
@@ -37,8 +37,19 @@ javascript:void%20function(){var%20e=document.createElement(%22script%22);e.src=
 
 5. Paste the copied strings from the spreadsheet into the bookmarklet's window:
 
-![](./resouces/bookmarklet.png)
+![](resources/bookmarklet.png)
 
 6. Click BOOK and lean back. After the bookmarklet is finished you should see the result in Timecockpit:
 
-![](./resouces/timecockpit.png)
+![](resources/timecockpit.png)
+
+## Compile code with generated source maps
+
+Run the following commands after cloning the repository (requires Node.js >= 10 to be installed on your system):
+
+```
+npm install
+npm run build
+```
+
+The generated files can be found in `/bookmarklet/dist`.

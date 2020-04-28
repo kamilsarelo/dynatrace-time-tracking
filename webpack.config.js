@@ -6,7 +6,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 module.exports = {
   entry: path.join(__dirname, "bookmarklet/bookmarklet.ts"),
   output: {
-    filename: "bookmarklet.js",
+    filename: "com.dynatrace.timetracking.bookmarklet.js",
     path: path.resolve(__dirname, "bookmarklet/dist"),
   },
   optimization: {
@@ -21,7 +21,11 @@ module.exports = {
       }),
     ],
   },
-  plugins: [new MiniCssExtractPlugin({ filename: "bookmarklet.css" })],
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "com.dynatrace.timetracking.bookmarklet.css",
+    }),
+  ],
   module: {
     rules: [
       {
@@ -41,8 +45,5 @@ module.exports = {
       },
     ],
   },
-  // resolve: {
-  //   extensions: [".ts", ".css"],
-  // },
   devtool: "source-map",
 };
