@@ -56,7 +56,7 @@ function isInvalidMinute(integerMinute: number): boolean {
 }
 
 // clear previous instances
-function clear() {
+function clear(): void {
   // or:  const clear = function() {
   [idHtml, idCss].forEach((id) => {
     document.querySelectorAll('#' + id).forEach((element) => {
@@ -79,9 +79,7 @@ function createContent() {
     link.type = 'text/css';
     // link.href = 'https://localhost/bookmarklet.css';
     // link.href = 'https://cdn.jsdelivr.net/gh/kamilsarelo/timetracking/bookmarklet/bookmarklet.css';
-    link.href =
-      'https://christian-fischer.github.io/com.dynatrace.timetracking.bookmarklet.css?q=' +
-      new Date().getTime();
+    link.href = `https://christian-fischer.github.io/com.dynatrace.timetracking.bookmarklet.css?q=${Date.now()}`;
     link.media = 'all';
     link.onload = () => {
       // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload and https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick/6348533#6348533
@@ -467,16 +465,7 @@ function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(
   callback: (statusOfPreviousLine?: string) => void,
 ) {
   xhrGet(
-    '/odata/APP_Timesheet' +
-      "?$filter=(APP_BeginTime eq datetime'" +
-      properties.APP_BeginTime +
-      "'" +
-      " or APP_EndTime eq datetime'" +
-      properties.APP_EndTime +
-      "')" +
-      " and APP_UserDetailUuid eq guid'" +
-      properties.APP_UserDetailUuid +
-      "'",
+    `/odata/APP_Timesheet?$filter=(APP_BeginTime eq datetime'${properties.APP_BeginTime}' or APP_EndTime eq datetime'${properties.APP_EndTime}') and APP_UserDetailUuid eq guid'${properties.APP_UserDetailUuid}'`,
   )
     .then((response) => {
       const json = JSON.parse(response);
@@ -528,11 +517,7 @@ function queryTaskIdAndProjectIdForJiraKey(
     return; // avoid running callback too early
   }
   xhrGet(
-    '/odata/APP_Task' +
-      "?$filter=APP_Code eq '" +
-      properties.jiraKey +
-      "'" +
-      '&$select=APP_TaskUuid,APP_ProjectUuid',
+    `/odata/APP_Task?$filter=APP_Code eq '${properties.jiraKey}'&$select=APP_TaskUuid,APP_ProjectUuid`,
   )
     .then((response) => {
       const json = JSON.parse(response); // https://stackoverflow.com/questions/33169315/json-parse-selecting-from-a-select-container
@@ -593,8 +578,8 @@ function createEntity(
 }
 
 function deleteEntity(APP_TimesheetUuid) {
-  xhrDelete("/odata/APP_Timesheet(guid'" + APP_TimesheetUuid + "')")
-    .then((response) => {
+  xhrDelete(`/odata/APP_Timesheet(guid'${APP_TimesheetUuid}')`)
+    .then(() => {
       console.log(
         'deleted APP_Timesheet entity with UUID: ' + APP_TimesheetUuid,
       );
@@ -604,19 +589,19 @@ function deleteEntity(APP_TimesheetUuid) {
     });
 }
 
-function xhrGet(url: string): Promise<string> {
+async function xhrGet(url: string): Promise<string> {
   return xhr(url);
 }
 
-function xhrPost(url: string, json?: any): Promise<string> {
+async function xhrPost(url: string, json?: any): Promise<string> {
   return xhr(url, 'POST', json);
 }
 
-function xhrDelete(url: string): Promise<string> {
+async function xhrDelete(url: string): Promise<string> {
   return xhr(url, 'DELETE');
 }
 
-function xhr(url: string, method?: string, json?: any): Promise<string> {
+async function xhr(url: string, method?: string, json?: any): Promise<string> {
   const request = new XMLHttpRequest();
 
   return new Promise((resolve, reject) => {
@@ -677,11 +662,9 @@ function xhr(url: string, method?: string, json?: any): Promise<string> {
       // window.onload = () => { ... cannot be performed after the redirect
       window.location.href = url;
     }, 1000);
+  } else if (document.readyState && document.readyState === 'complete') {
+    createContent();
   } else {
-    if (document.readyState && document.readyState === 'complete') {
-      createContent();
-    } else {
-      window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING'] = false;
-    }
+    window['COM_KAMILSARELO_DYNATRACE_TIMETRACKING_FORK_RUNNING'] = false;
   }
 })();
