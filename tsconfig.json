@@ -3,8 +3,6 @@
     "module": "amd",
     "target": "es2015",
     "strict": false,
-    "allowJs": true,
-    "checkJs": true,
     "noImplicitAny": false,
     "removeComments": true,
     "preserveConstEnums": true,
