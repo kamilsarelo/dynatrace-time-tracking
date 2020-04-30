@@ -21,6 +21,40 @@ const statusOfPreviousLineDone = 'done';
 
 let cacheUserDetailUuid;
 
+interface TimecockpitEntryProperties {
+  jiraKey: string;
+
+  APP_BeginTime: string;
+  APP_EndTime: string;
+  APP_Description: string;
+  APP_TaskUuid?: string;
+  APP_ProjectUuid?: string;
+  APP_UserDetailUuid?: string;
+  USR_TimesheetTypeUuid?: string;
+
+  APP_IsDurationTimesheet?: boolean;
+  APP_NoBilling?: boolean;
+  USR_MedicalConfirmationReceived?: boolean;
+}
+
+// time sanity checks
+function isInvalidDigit(stringTime: string): boolean {
+  return (
+    isNaN(+stringTime.charAt(0)) ||
+    isNaN(+stringTime.charAt(1)) ||
+    isNaN(+stringTime.charAt(3)) ||
+    isNaN(+stringTime.charAt(4))
+  );
+}
+
+function isInvalidHour(integerHour: number): boolean {
+  return isNaN(integerHour) || integerHour < 0 || integerHour > 23;
+}
+
+function isInvalidMinute(integerMinute: number): boolean {
+  return isNaN(integerMinute) || integerMinute < 0 || integerMinute > 59;
+}
+
 // clear previous instances
 function clear() {
   // or:  const clear = function() {
@@ -162,7 +196,9 @@ function createContent() {
       // and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
       //
       // ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-      const synchronizedLineProcessor = (statusOfPreviousLine?: any) => {
+      const synchronizedLineProcessor = (
+        statusOfPreviousLine?: string,
+      ): void => {
         if (linePrevious) {
           input.innerHTML =
             (input.innerHTML ? input.innerHTML + '<br>' : '') +
@@ -225,22 +261,26 @@ function createContent() {
   });
 }
 
-function checkLineAndParseProperties(line, timesheetTypeUuid, callback) {
+function checkLineAndParseProperties(
+  line: string,
+  timesheetTypeUuid: string,
+  callback: (statusOfPreviousLine?: string) => void,
+) {
   line = line.trim();
   if (!line) {
     callback(); // no error on empty line
     return;
   }
 
-  const properties = (() => {
-    //anonymous function in order to use "return" and no need to deferred call of callback before each return
+  function computeProperties(
+    line: string,
+  ): TimecockpitEntryProperties | undefined {
     // basic sanity checks:
     // 2019-03-11|12:00|16:00|...|...
     // 0123456789 123456789 123456789
     if (
-      !line || // not: null undefined NaN "" 0 false: https://stackoverflow.com/questions/5515310/is-there-a-standard-function-to-check-for-null-undefined-or-blank-variables-in/5515349#5515349
       line.length <= 23 || // first 23 characters are fixed width: date, time, time
-      isNaN(line.charAt(0)) || // first character must be a number: https://stackoverflow.com/questions/8935632/check-if-character-is-number
+      isNaN(+line.charAt(0)) || // first character must be a number: https://stackoverflow.com/questions/8935632/check-if-character-is-number
       '|' !== line.charAt(10) ||
       '|' !== line.charAt(16) ||
       '|' !== line.charAt(22)
@@ -269,113 +309,97 @@ function checkLineAndParseProperties(line, timesheetTypeUuid, callback) {
       return;
     }
 
-    {
-      // date sanity checks
-      // valid delimiters
-      if ('-' !== stringDate.charAt(4) || '-' !== stringDate.charAt(7)) {
-        return;
-      }
-      // valid digits: https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
-      if (
-        isNaN(stringDate.charAt(0)) ||
-        isNaN(stringDate.charAt(1)) ||
-        isNaN(stringDate.charAt(2)) ||
-        isNaN(stringDate.charAt(3)) ||
-        isNaN(stringDate.charAt(5)) ||
-        isNaN(stringDate.charAt(6)) ||
-        isNaN(stringDate.charAt(8)) ||
-        isNaN(stringDate.charAt(9))
-      ) {
-        return;
-      }
-      // valid year
-      const integerYearCurrent = new Date().getFullYear();
-      const integerYear = parseInt(stringDate.substr(0, 4), 10);
-      // if (isNaN(integerYear) || integerYear < 2019 || integerYear > 2046) {
-      if (
-        isNaN(integerYear) ||
-        integerYear < integerYearCurrent ||
-        integerYear > integerYearCurrent
-      ) {
-        return;
-      }
-      // valid month
-      const integerMonth = parseInt(stringDate.substr(5, 2), 10);
-      if (isNaN(integerYear) || integerMonth < 1 || integerMonth > 12) {
-        return;
-      }
-      // valid day
-      const integerDay = parseInt(stringDate.substr(8, 2), 10);
-      if (isNaN(integerYear) || integerDay < 1 || integerDay > 31) {
-        return;
-      }
-      // valid date
-      if (
-        (() => {
-          const date = new Date();
-          date.setFullYear(integerYear, integerMonth - 1, integerDay);
-          return (
-            date.getFullYear() !== integerYear ||
-            date.getMonth() !== integerMonth - 1 ||
-            date.getDate() !== integerDay
-          ); // https://ctrlq.org/code/20109-javascript-date-valid
-        })()
-      ) {
-        return;
-      }
+    // ---
+
+    // date sanity checks
+    // valid delimiters
+    if ('-' !== stringDate.charAt(4) || '-' !== stringDate.charAt(7)) {
+      return;
+    }
+    // valid digits: https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+    if (
+      isNaN(+stringDate.charAt(0)) ||
+      isNaN(+stringDate.charAt(1)) ||
+      isNaN(+stringDate.charAt(2)) ||
+      isNaN(+stringDate.charAt(3)) ||
+      isNaN(+stringDate.charAt(5)) ||
+      isNaN(+stringDate.charAt(6)) ||
+      isNaN(+stringDate.charAt(8)) ||
+      isNaN(+stringDate.charAt(9))
+    ) {
+      return;
+    }
+    // valid year
+    const integerYearCurrent = new Date().getFullYear();
+    const integerYear = parseInt(stringDate.substr(0, 4), 10);
+    // if (isNaN(integerYear) || integerYear < 2019 || integerYear > 2046) {
+    if (
+      isNaN(integerYear) ||
+      integerYear < integerYearCurrent ||
+      integerYear > integerYearCurrent
+    ) {
+      return;
+    }
+    // valid month
+    const integerMonth = parseInt(stringDate.substr(5, 2), 10);
+    if (isNaN(integerYear) || integerMonth < 1 || integerMonth > 12) {
+      return;
+    }
+    // valid day
+    const integerDay = parseInt(stringDate.substr(8, 2), 10);
+    if (isNaN(integerYear) || integerDay < 1 || integerDay > 31) {
+      return;
+    }
+    // valid date
+    if (
+      (() => {
+        const date = new Date();
+        date.setFullYear(integerYear, integerMonth - 1, integerDay);
+        return (
+          date.getFullYear() !== integerYear ||
+          date.getMonth() !== integerMonth - 1 ||
+          date.getDate() !== integerDay
+        ); // https://ctrlq.org/code/20109-javascript-date-valid
+      })()
+    ) {
+      return;
     }
 
-    {
-      // time sanity checks
-      function isInvaliDigit(stringTime) {
-        return (
-          isNaN(stringTime.charAt(0)) ||
-          isNaN(stringTime.charAt(1)) ||
-          isNaN(stringTime.charAt(3)) ||
-          isNaN(stringTime.charAt(4))
-        );
-      }
-      function isInvalidHour(integerHour) {
-        return isNaN(integerHour) || integerHour < 0 || integerHour > 23;
-      }
-      function isInvalidMinute(integerMinute) {
-        return isNaN(integerMinute) || integerMinute < 0 || integerMinute > 59;
-      }
-      // valid delimiters
-      if (
-        ':' !== stringTimeBegin.charAt(2) ||
-        ':' !== stringTimeEnd.charAt(2)
-      ) {
-        return;
-      }
-      // valid digits
-      if (isInvaliDigit(stringTimeBegin) || isInvaliDigit(stringTimeEnd)) {
-        return;
-      }
-      // valid hours
-      const integerHourBegin = parseInt(stringTimeBegin.substr(0, 2), 10);
-      const integerHourEnd = parseInt(stringTimeEnd.substr(0, 2), 10);
-      if (isInvalidHour(integerHourBegin) || isInvalidHour(integerHourEnd)) {
-        return;
-      }
-      // valid minutes
-      const integerMinuteBegin = parseInt(stringTimeBegin.substr(3, 2), 10);
-      const integerMinuteEnd = parseInt(stringTimeEnd.substr(3, 2), 10);
-      if (
-        isInvalidMinute(integerMinuteBegin) ||
-        isInvalidMinute(integerMinuteEnd)
-      ) {
-        return;
-      }
-      // begin actually before end
-      if (
-        integerHourBegin > integerHourEnd ||
-        (integerHourBegin === integerHourEnd &&
-          integerMinuteBegin >= integerMinuteEnd)
-      ) {
-        return;
-      }
+    // ---
+
+    // valid delimiters
+    if (':' !== stringTimeBegin.charAt(2) || ':' !== stringTimeEnd.charAt(2)) {
+      return;
     }
+    // valid digits
+    if (isInvalidDigit(stringTimeBegin) || isInvalidDigit(stringTimeEnd)) {
+      return;
+    }
+    // valid hours
+    const integerHourBegin = parseInt(stringTimeBegin.substr(0, 2), 10);
+    const integerHourEnd = parseInt(stringTimeEnd.substr(0, 2), 10);
+    if (isInvalidHour(integerHourBegin) || isInvalidHour(integerHourEnd)) {
+      return;
+    }
+    // valid minutes
+    const integerMinuteBegin = parseInt(stringTimeBegin.substr(3, 2), 10);
+    const integerMinuteEnd = parseInt(stringTimeEnd.substr(3, 2), 10);
+    if (
+      isInvalidMinute(integerMinuteBegin) ||
+      isInvalidMinute(integerMinuteEnd)
+    ) {
+      return;
+    }
+    // begin actually before end
+    if (
+      integerHourBegin > integerHourEnd ||
+      (integerHourBegin === integerHourEnd &&
+        integerMinuteBegin >= integerMinuteEnd)
+    ) {
+      return;
+    }
+
+    // ---
 
     const APP_BeginTime = stringDate + 'T' + stringTimeBegin + ':00';
     const APP_EndTime = stringDate + 'T' + stringTimeEnd + ':00';
@@ -389,38 +413,36 @@ function checkLineAndParseProperties(line, timesheetTypeUuid, callback) {
       APP_EndTime: APP_EndTime,
       APP_Description: APP_Description,
     };
-  })();
-  if (properties) {
-    properties['USR_TimesheetTypeUuid'] = timesheetTypeUuid;
+  }
 
-    // console.log('properties');
-    // console.log('  jiraKey               = ' + properties.jiraKey);
-    // console.log('  APP_BeginTime         = ' + properties.APP_BeginTime);
-    // console.log('  APP_EndTime           = ' + properties.APP_EndTime);
-    // console.log('  APP_Description       = ' + properties.APP_Description);
-    // console.log('  USR_TimesheetTypeUuid = ' + properties.USR_TimesheetTypeUuid);
+  const properties = computeProperties(line);
 
+  if (properties !== undefined) {
+    properties.USR_TimesheetTypeUuid = timesheetTypeUuid;
     queryUserId(properties, callback);
   } else {
     callback('invalid');
   }
 }
 
-function queryUserId(properties, callback) {
+function queryUserId(
+  properties: TimecockpitEntryProperties,
+  callback: (statusOfPreviousLine?: string) => void,
+) {
   function nextStep() {
     properties.APP_UserDetailUuid = cacheUserDetailUuid;
-    // console.log('APP_UserDetailUuid = ' + properties.APP_UserDetailUuid);
-
     checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(properties, callback);
   }
+
   if (cacheUserDetailUuid) {
     nextStep(); // not deferred, because async xhr starts immediately in next step
     return; // avoid running callback too early
   }
+
   xhrGet('/shell/user')
     .then((response: string) => {
-      // console.log(response);
       const json = JSON.parse(response);
+
       if (json) {
         if (json.useruuid) {
           cacheUserDetailUuid = json.useruuid;
@@ -441,8 +463,8 @@ function queryUserId(properties, callback) {
 }
 
 function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(
-  properties,
-  callback,
+  properties: TimecockpitEntryProperties,
+  callback: (statusOfPreviousLine?: string) => void,
 ) {
   xhrGet(
     '/odata/APP_Timesheet' +
@@ -457,8 +479,8 @@ function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(
       "'",
   )
     .then((response) => {
-      // console.log(response);
       const json = JSON.parse(response);
+
       if (json && json.value) {
         if (json.value.length > 0) {
           console.log(
@@ -490,14 +512,14 @@ function checkIfEntityWithEqualBeginOrEndTimeAlreadyExists(
     });
 }
 
-function queryTaskIdAndProjectIdForJiraKey(properties, callback) {
+function queryTaskIdAndProjectIdForJiraKey(
+  properties: TimecockpitEntryProperties,
+  callback: (statusOfPreviousLine?: string) => void,
+) {
   function nextStep() {
     const cache = cacheTaskIdAndProjectId.get(properties.jiraKey);
     properties.APP_TaskUuid = cache.APP_TaskUuid;
     properties.APP_ProjectUuid = cache.APP_ProjectUuid;
-
-    // console.log('  APP_TaskUuid          = ' + properties.APP_TaskUuid);
-    // console.log('  APP_ProjectUuid       = ' + properties.APP_ProjectUuid);
 
     createEntity(properties, callback);
   }
@@ -542,7 +564,10 @@ function queryTaskIdAndProjectIdForJiraKey(properties, callback) {
     });
 }
 
-function createEntity(properties, callback) {
+function createEntity(
+  properties: TimecockpitEntryProperties,
+  callback: (statusOfPreviousLine?: string) => void,
+) {
   const json = JSON.stringify({
     // 'APP_TimesheetUuid': https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript/2117523#2117523
     APP_BeginTime: properties.APP_BeginTime,
@@ -556,9 +581,9 @@ function createEntity(properties, callback) {
     // 'APP_NoBilling': false,
     // 'USR_MedicalConfirmationReceived': false
   });
+
   xhrPost('/odata/APP_Timesheet', json)
-    .then((response) => {
-      // console.log('booked');
+    .then(() => {
       callback(statusOfPreviousLineDone);
     })
     .catch((error) => {
@@ -598,9 +623,6 @@ function xhr(url: string, method?: string, json?: any): Promise<string> {
     request.onreadystatechange = () => {
       if (request.readyState !== 4) return; // 4 is DONE, https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
       if (request.status >= 200 && request.status < 300) {
-        // console.dir(request);
-        // console.log(response);
-        // resolve(request);
         resolve(request.responseText);
       } else {
         reject({
