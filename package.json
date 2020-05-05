@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rfv bookmarklet/dist/*",
-    "build": "webpack --mode production"
+    "clean": "del /f /s /q bookmarklet\\dist\\*",
+    "build": "webpack --mode production",
+	"deploy": "copy /b /y bookmarklet\\dist ..\\christian-fischer.github.io && cd ..\\christian-fischer.github.io && git commit -a -m \"deploy new version\" && git push"
   },
   "repository": {
     "type": "git",
