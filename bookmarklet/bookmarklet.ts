@@ -60,7 +60,7 @@ function clear(): void {
   // or:  const clear = function() {
   [idHtml, idCss].forEach((id) => {
     document.querySelectorAll('#' + id).forEach((element) => {
-      element.parentNode.removeChild(element); //https://stackoverflow.com/questions/8830839/javascript-dom-remove-element/8830882
+      element.parentNode!.removeChild(element); //https://stackoverflow.com/questions/8830839/javascript-dom-remove-element/8830882
     });
   });
 }
@@ -118,11 +118,11 @@ function createContent() {
 							</div>
 						</div>
 					</div>`;
-    document.body.appendChild(dummy.querySelector('div'));
+    document.body.appendChild(dummy.querySelector('div')!);
 
     setTimeout(() => {
       // must be deferred, https://stackoverflow.com/questions/18509507/why-use-settimeout-in-deferred
-      document.getElementById(idInput).focus();
+      document.getElementById(idInput)!.focus();
     }, 0);
 
     // document.getElementById(idInput).addEventListener('paste', (e) => { // https://stackoverflow.com/questions/21257688/paste-rich-text-into-content-editable-div-and-only-keep-bold-and-italics-formatt
@@ -137,7 +137,7 @@ function createContent() {
     //
     // ...this is good, but the following is better...
     //
-    document.getElementById(idInput).addEventListener('paste', (e) => {
+    document.getElementById(idInput)!.addEventListener('paste', (e) => {
       // https://stackoverflow.com/questions/12027137/javascript-trick-for-paste-as-plain-text-in-execcommand/19327995#19327995
       e.preventDefault();
       const content = ((e as any).originalEvent || e).clipboardData.getData(
@@ -146,8 +146,8 @@ function createContent() {
       document.execCommand('insertText', false, content);
     });
 
-    document.getElementById(idButtonBook).onclick = () => {
-      const input = document.getElementById(idInput);
+    document.getElementById(idButtonBook)!.onclick = () => {
+      const input = document.getElementById(idInput)!;
 
       // remove all html except line breaks
       input.querySelectorAll('span').forEach((span) => {
@@ -166,7 +166,7 @@ function createContent() {
         });
         input.contentEditable = isEnabled;
         input.focus();
-        document.getElementById(idLoader).style.visibility = isEnabled
+        document.getElementById(idLoader)!.style.visibility = isEnabled
           ? 'hidden'
           : 'visible';
       }
@@ -235,23 +235,21 @@ function createContent() {
       }, 0);
     };
 
-    document.getElementById(idButtonClear).onclick = () => {
+    document.getElementById(idButtonClear)!.onclick = () => {
       // https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick
-      const input = document.getElementById(idInput);
+      const input = document.getElementById(idInput)!;
       input.innerHTML = ''; // https://stackoverflow.com/questions/3450593/how-do-i-clear-the-content-of-a-div-using-javascript
       input.focus();
     };
 
-    document.getElementById(idButtonClose).onclick = () => {
+    document.getElementById(idButtonClose)!.onclick = () => {
       clear();
     };
 
-    document.onkeydown = (event: any) => {
-      event = event || window.event;
-      if (event.keyCode == 27) {
-        // ESC key
+    document.onkeydown = (event: KeyboardEvent) => {
+      if (event.code === 'Escape') {
         clear();
-        document.onkeydown = undefined; // deregister
+        document.onkeydown = (_: KeyboardEvent) => {}; // deregister
       }
     };
 
@@ -655,7 +653,7 @@ async function xhr(url: string, method?: string, json?: any): Promise<string> {
 					...redirecting to ' + url + '. Run the bookmarklet again after the site loaded.
 				</div>
 			</div>`;
-    document.body.appendChild(dummy.querySelector('div')); // https://developer.mozilla.org/de/docs/Web/API/Document/body and https://stackoverflow.com/questions/9614932/best-way-to-create-large-static-dom-elements-in-javascript
+    document.body.appendChild(dummy.querySelector('div')!); // https://developer.mozilla.org/de/docs/Web/API/Document/body and https://stackoverflow.com/questions/9614932/best-way-to-create-large-static-dom-elements-in-javascript
 
     window.setTimeout(() => {
       // https://stackoverflow.com/questions/18048338/how-can-i-execute-a-script-after-calling-window-location-href
