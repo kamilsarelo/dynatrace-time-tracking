@@ -200,6 +200,18 @@ function computeTimecockpitEntryProperties(
   };
 }
 
+function setEnabled(input: HTMLInputElement, enable: boolean): void {
+  [idButtonBook, idButtonClear, idButtonClose].forEach((id) => {
+    const button = document.getElementById(id) as HTMLButtonElement;
+    button.disabled = !enable;
+  });
+  input.contentEditable = `enable`;
+  input.focus();
+  document.getElementById(idLoader)!.style.visibility = enable
+    ? 'hidden'
+    : 'visible';
+}
+
 // clear previous instances
 function clear(): void {
   // or:  const clear = function() {
@@ -229,6 +241,83 @@ async function loadCss(): Promise<void> {
     };
     document.head.appendChild(link); // https://developer.mozilla.org/de/docs/Web/API/Document/head
   });
+}
+
+async function bookEntry(): Promise<void> {
+  const input = document.getElementById(idInput) as HTMLInputElement;
+
+  // remove all html except line breaks
+  input.querySelectorAll('span').forEach((span) => {
+    // also: ... .forEach(span => { ...
+    input.removeChild(span);
+  });
+
+  const string = input.innerText; // or https://developer.mozilla.org/de/docs/Web/API/Node/textContent but textContent ignores line breaks
+  if (string.trim().length === 0) {
+    return;
+  }
+
+  setEnabled(input, false);
+
+  const selectType = document.getElementById(idSelectType) as HTMLSelectElement;
+  const timesheetTypeUuid = selectType.options[selectType.selectedIndex].value;
+
+  input.innerHTML = '';
+  let linePrevious;
+
+  const lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but mind: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
+  // lineArray.forEach((line) => { ...
+  // the whole booking process has to be done sequential via synchronous xhr (xhr is parallel/async by default),
+  // so caches can work, AND most importantly no duplicate entities are created
+  // but synchronous xhr should be used in workers exclusively: https://xhr.spec.whatwg.org/#synchronous-flag
+  // ...thus forEach cannot be used
+  //
+  // "Synchronous XMLHttpRequest outside of workers is in the process of being removed from the web platform
+  // as it has detrimental effects to the end user’s experience. (This is a long process that takes many years.)
+  // Developers must not pass false for the async argument when current global object is a Window object.
+  // User agents are strongly encouraged to warn about such usage in developer tools
+  // and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
+  //
+  // ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
+  async function synchronizedLineProcessor(
+    statusOfPreviousLine?: string,
+  ): Promise<void> {
+    if (linePrevious) {
+      input.innerHTML =
+        (input.innerHTML ? input.innerHTML + '<br/>' : '') +
+        (statusOfPreviousLine
+          ? `<span class="pill" style="background-color:${
+              statusOfPreviousLine === statusOfPreviousLineDone
+                ? 'green'
+                : 'red'
+            };">s${statusOfPreviousLine}</span>`
+          : '') +
+        linePrevious;
+      input.scrollTop = input.scrollHeight; // https://stackoverflow.com/questions/40495860/how-to-scroll-to-automatically-scroll-to-the-bottom-of-an-editable-div-onload/40506676#40506676
+    }
+    if (lineArray.length > 0) {
+      linePrevious = lineArray.shift(); // https://love2dev.com/blog/javascript-remove-from-array/
+
+      await checkLineAndParseProperties(
+        linePrevious,
+        timesheetTypeUuid,
+        synchronizedLineProcessor,
+      ); // first step, forwards to consecutive steps
+    } else {
+      setEnabled(input, true);
+
+      const refreshButton = document.querySelector(
+        'button[ng-click="refresh()"]',
+      ) as HTMLButtonElement;
+
+      if (refreshButton) {
+        refreshButton.click();
+      }
+    }
+  }
+
+  // TODO ChMa: check if this is still required despite using promises!
+  setTimeout(synchronizedLineProcessor, 0); // must be deferred
 }
 
 async function createContent(): Promise<void> {
@@ -296,96 +385,7 @@ async function createContent(): Promise<void> {
     });
 
   document.getElementById(idButtonBook)!.onclick = () => {
-    const input = document.getElementById(idInput)!;
-
-    // remove all html except line breaks
-    input.querySelectorAll('span').forEach((span) => {
-      // also: ... .forEach(span => { ...
-      input.removeChild(span);
-    });
-
-    const string = input.innerText; // or https://developer.mozilla.org/de/docs/Web/API/Node/textContent but textContent ignores line breaks
-    if (string.trim().length === 0) {
-      return;
-    }
-
-    function setEnabled(isEnabled) {
-      [idButtonBook, idButtonClear, idButtonClose].forEach((id) => {
-        const button = document.getElementById(id) as HTMLButtonElement;
-        button.disabled = !isEnabled;
-      });
-      input.contentEditable = isEnabled;
-      input.focus();
-      document.getElementById(idLoader)!.style.visibility = isEnabled
-        ? 'hidden'
-        : 'visible';
-    }
-
-    setEnabled(false);
-
-    const selectType = document.getElementById(
-      idSelectType,
-    ) as HTMLSelectElement;
-    const timesheetTypeUuid =
-      selectType.options[selectType.selectedIndex].value;
-
-    input.innerHTML = '';
-    let linePrevious;
-
-    const lineArray = string.split(/\r\n|\r|\n/g); // also string.split(/\r?\n/g); but mind: https://stackoverflow.com/questions/21711768/split-string-in-javascript-and-detect-line-break/21712066#21712066
-    // lineArray.forEach((line) => { ...
-    // the whole booking process has to be done sequential via synchronous xhr (xhr is parallel/async by default),
-    // so caches can work, AND most importantly no duplicate entities are created
-    // but synchronous xhr should be used in workers exclusively: https://xhr.spec.whatwg.org/#synchronous-flag
-    // ...thus forEach cannot be used
-    //
-    // "Synchronous XMLHttpRequest outside of workers is in the process of being removed from the web platform
-    // as it has detrimental effects to the end user’s experience. (This is a long process that takes many years.)
-    // Developers must not pass false for the async argument when current global object is a Window object.
-    // User agents are strongly encouraged to warn about such usage in developer tools
-    // and may experiment with throwing an "InvalidAccessError" DOMException when it occurs."
-    //
-    // ...thus let's simulate synchronours xhr with a mutex callback... https://www.mkyong.com/java/java-thread-mutex-and-semaphore-example/
-    const synchronizedLineProcessor = (statusOfPreviousLine?: string): void => {
-      if (linePrevious) {
-        input.innerHTML =
-          (input.innerHTML ? input.innerHTML + '<br>' : '') +
-          (statusOfPreviousLine
-            ? '<span class="pill" style="background-color: ' +
-              (statusOfPreviousLine === statusOfPreviousLineDone
-                ? 'green'
-                : 'red') +
-              ';">' +
-              statusOfPreviousLine +
-              '</span>'
-            : '') +
-          linePrevious;
-        input.scrollTop = input.scrollHeight; // https://stackoverflow.com/questions/40495860/how-to-scroll-to-automatically-scroll-to-the-bottom-of-an-editable-div-onload/40506676#40506676
-      }
-      if (lineArray.length > 0) {
-        linePrevious = lineArray.shift(); // https://love2dev.com/blog/javascript-remove-from-array/
-
-        checkLineAndParseProperties(
-          linePrevious,
-          timesheetTypeUuid,
-          synchronizedLineProcessor,
-        ); // first step, forwards to consecutive steps
-      } else {
-        setEnabled(true);
-
-        const refreshButton = document.querySelector(
-          'button[ng-click="refresh()"]',
-        ) as HTMLButtonElement;
-
-        if (refreshButton) {
-          refreshButton.click();
-        }
-      }
-    };
-    setTimeout(() => {
-      // must be deferred
-      synchronizedLineProcessor();
-    }, 0);
+    bookEntry();
   };
 
   document.getElementById(idButtonClear)!.onclick = () => {
