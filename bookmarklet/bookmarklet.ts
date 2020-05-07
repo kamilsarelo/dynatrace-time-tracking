@@ -292,7 +292,7 @@ async function bookEntry(): Promise<void> {
               statusOfPreviousLine === statusOfPreviousLineDone
                 ? 'green'
                 : 'red'
-            };">s${statusOfPreviousLine}</span>`
+            };">${statusOfPreviousLine}</span>`
           : '') +
         linePrevious;
       input.scrollTop = input.scrollHeight; // https://stackoverflow.com/questions/40495860/how-to-scroll-to-automatically-scroll-to-the-bottom-of-an-editable-div-onload/40506676#40506676
