@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "del /f /s /q bookmarklet\\dist\\*",
     "build": "webpack --mode production",
-	"deploy": "copy /b /y bookmarklet\\dist ..\\christian-fischer.github.io && cd ..\\christian-fischer.github.io && git commit -a -m \"deploy new version\" && git push",
-	"all": "npm run clean && npm run build && npm run deploy"
+    "deploy": "copy /b /y bookmarklet\\dist ..\\christian-fischer.github.io && cd ..\\christian-fischer.github.io && git commit -a -m \"deploy new version\" && git push",
+    "all": "npm run clean && npm run build && npm run deploy"
   },
   "repository": {
     "type": "git",
