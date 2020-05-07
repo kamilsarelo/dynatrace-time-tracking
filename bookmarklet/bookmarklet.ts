@@ -200,13 +200,15 @@ function computeTimecockpitEntryProperties(
   };
 }
 
-function setEnabled(input: HTMLInputElement, enable: boolean): void {
+function setEnabled(input: HTMLDivElement, enable: boolean): void {
   [idButtonBook, idButtonClear, idButtonClose].forEach((id) => {
     const button = document.getElementById(id) as HTMLButtonElement;
     button.disabled = !enable;
   });
-  input.contentEditable = `enable`;
+
+  input.contentEditable = 'true'; // TODO ChMa: shouldn't this be set according to param 'enable'?
   input.focus();
+
   document.getElementById(idLoader)!.style.visibility = enable
     ? 'hidden'
     : 'visible';
@@ -244,7 +246,7 @@ async function loadCss(): Promise<void> {
 }
 
 async function bookEntry(): Promise<void> {
-  const input = document.getElementById(idInput) as HTMLInputElement;
+  const input = document.getElementById(idInput) as HTMLDivElement;
 
   // remove all html except line breaks
   input.querySelectorAll('span').forEach((span) => {
